@@ -1,0 +1,430 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.59.4 36d058c8",
+  "osm3s": {
+    "timestamp_osm_base": "2023-03-28T10:52:38Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+    {
+      "type": "node",
+      "id": 471557535,
+      "lat": 50.0632264,
+      "lon": 19.9403302,
+      "tags": {
+        "addr:city": "Kraków",
+        "addr:country": "PL",
+        "addr:housenumber": "25",
+        "addr:street": "Floriańska",
+        "email": "mf1@mp.pl",
+        "name": "Muzeum Farmacji UJ",
+        "name:en": "Museum of Pharmacy",
+        "name:hu": "Patikamúzeum",
+        "name:pl": "Muzeum Farmacji UJ",
+        "name:ru": "Музей фармацевтики",
+        "opening_hours": "We-Sa 09:30-15:00; Tu 12:00-18:30",
+        "phone": "+48 12 421 92 79",
+        "tourism": "museum",
+        "website": "http://muzeum.farmacja.uj.edu.pl",
+        "wikidata": "Q11786965",
+        "wikipedia": "pl:Muzeum Farmacji Collegium Medicum Uniwersytetu Jagiellońskiego"
+      }
+    },
+    {
+      "type": "node",
+      "id": 471557583,
+      "lat": 50.0615617,
+      "lon": 19.9337367,
+      "tags": {
+        "name": "Muzeum Uniwersytetu Jagiellońskiego",
+        "name:de": "Museum des Jagiellonen-Universitäts",
+        "name:en": "University Museum",
+        "name:hu": "Jagelló Egyetem Múzeuma",
+        "tourism": "museum",
+        "wikidata": "Q11787234",
+        "wikipedia": "pl:Muzeum Uniwersytetu Jagiellońskiego"
+      }
+    },
+    {
+      "type": "node",
+      "id": 471557722,
+      "lat": 50.0575043,
+      "lon": 19.9366963,
+      "tags": {
+        "addr:city": "Kraków",
+        "addr:country": "PL",
+        "addr:housenumber": "2",
+        "addr:street": "Senacka",
+        "name": "Muzeum Geologiczne PAN",
+        "name:de": "Geologisches Museum",
+        "name:en": "Geological Museum",
+        "name:hu": "Lengyel Tudományos Akadémia Földtani Múzeuma",
+        "name:pl": "Muzeum Geologiczne PAN",
+        "tourism": "museum",
+        "wikidata": "Q6944411",
+        "wikipedia": "pl:Muzeum Geologiczne Instytutu Nauk Geologicznych PAN w Krakowie"
+      }
+    },
+    {
+      "type": "node",
+      "id": 471557814,
+      "lat": 50.0633123,
+      "lon": 19.9417875,
+      "tags": {
+        "addr:city": "Kraków",
+        "addr:country": "PL",
+        "addr:housenumber": "21",
+        "addr:street": "Szpitalna",
+        "fee": "yes",
+        "free_day": "no",
+        "name": "Dom Pod Krzyżem",
+        "name:hu": "Ház a Kereszt Alatt",
+        "tourism": "museum",
+        "website": "https://muzeumkrakowa.pl/oddzialy/dom-pod-krzyzem",
+        "wikidata": "Q5101542",
+        "wikipedia": "pl:Dom pod Krzyżem w Krakowie"
+      }
+    },
+    {
+      "type": "node",
+      "id": 471557838,
+      "lat": 50.0627747,
+      "lon": 19.9364960,
+      "tags": {
+        "fee": "yes",
+        "fee:conditional": "no @ Mo except temporary exhibitions",
+        "name": "Muzeum Historyczne Miasta Krakowa",
+        "name:en": "Historical Museum of the City of Kraków",
+        "name:hu": "Krakkói Várostörténeti Múzeum",
+        "tourism": "museum",
+        "website": "http://muzeumkrakowa.pl/oddzialy/palac-krzysztofory",
+        "wikidata": "Q5101500",
+        "wikipedia": "pl:Muzeum Historyczne Miasta Krakowa"
+      }
+    },
+    {
+      "type": "node",
+      "id": 471635664,
+      "lat": 50.0633496,
+      "lon": 19.9359640,
+      "tags": {
+        "addr:housenumber": "9",
+        "addr:street": "Plac Szczepański",
+        "description:hu": "Stanisław Wyspiański (1869–1907) lengyel drámaíró, festő, költő, belsőépítész és bútortervező…",
+        "name": "Muzeum Stanisława Wyspiańskiego",
+        "name:de": "Stanisław-Wyspiański-Museum",
+        "name:hu": "Stanisław Wyspiański Múzeum",
+        "opening_hours": "Tu-Sa 10:00-18:00; Su 10:00-16:00",
+        "phone": "+48 12 433 54 50",
+        "tourism": "museum",
+        "website": "https://mnk.pl/oddzial/kamienica-szolayskich",
+        "wikidata": "Q1321083",
+        "wikipedia": "pl:Muzeum Stanisława Wyspiańskiego"
+      }
+    },
+    {
+      "type": "node",
+      "id": 475387282,
+      "lat": 50.0635805,
+      "lon": 19.9344469,
+      "tags": {
+        "addr:city": "Kraków",
+        "addr:housenumber": "3a",
+        "addr:postcode": "31-011",
+        "addr:street": "Plac Szczepański",
+        "name": "Bunkier Sztuki",
+        "name:hu": "Művészetek Bunkere",
+        "opening_hours": "Tu-Su 11:00-19:00",
+        "tourism": "museum",
+        "website": "http://bunkier.art.pl/",
+        "wikidata": "Q11699302",
+        "wikipedia": "pl:Galeria Sztuki Współczesnej „Bunkier Sztuki”"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1332080339,
+      "lat": 50.0619960,
+      "lon": 19.9377745,
+      "tags": {
+        "addr:city": "Kraków",
+        "addr:country": "PL",
+        "addr:housenumber": "1",
+        "addr:postcode": "31-042",
+        "addr:street": "Rynek Główny",
+        "fee": "yes",
+        "name": "Podziemia Rynku",
+        "name:en": "Rynek Underground",
+        "name:hu": "Föld alatti Piac tér",
+        "name:pl": "Podziemia Rynku",
+        "name:ru": "Подземелье рынка",
+        "opening_hours": "Mo-Su 10:00-20:00; Tu 10:00-16:00",
+        "operator": "Muzeum Historyczne Miasta Krakowa",
+        "tourism": "museum",
+        "website": "http://www.podziemiarynku.com/",
+        "wheelchair": "limited",
+        "wikidata": "Q5420576",
+        "wikipedia": "pl:Podziemia Rynku w Krakowie"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1516798709,
+      "lat": 50.0560885,
+      "lon": 19.9371042,
+      "tags": {
+        "addr:city": "Kraków",
+        "addr:country": "PL",
+        "addr:housenumber": "19",
+        "addr:street": "Kanonicza",
+        "name": "Muzeum Archidiecezjalne",
+        "name:de": "Erzdiözese-Museum",
+        "name:hu": "Főegyházmegyei Múzeum",
+        "name:pl": "Muzeum Archidiecezjalne",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1516840253,
+      "lat": 50.0563019,
+      "lon": 19.9372228,
+      "tags": {
+        "addr:city": "Kraków",
+        "description": "Oddział Muzeum Narodowego",
+        "description:de": "Filiale des Nationalmuseums",
+        "fee": "yes",
+        "fee:conditional": "no @ Su",
+        "name": "Pałac Biskupa Erazma Ciołka",
+        "name:hu": "Erazm Ciołek (1492–1546) püspök palotája",
+        "opening_hours": "Mo-Sa 10:00-18:00, Su 10:00-16:00",
+        "tourism": "museum",
+        "wheelchair": "yes",
+        "wheelchair:description": "niemal nieograniczony, część jednej sali w galerii sztuki cerkiewnej ma stopień bez podjazdu"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4002989037,
+      "lat": 50.0641425,
+      "lon": 19.9231397,
+      "tags": {
+        "addr:city": "Kraków",
+        "addr:housenumber": "30",
+        "addr:postcode": "30-059",
+        "addr:street": "Aleja Adama Mickiewicza",
+        "fee": "no",
+        "name": "Muzeum Geologiczne WGGiOŚ AGH",
+        "name:hu": "Földtani Múzeum (Műszaki Egyetem, Geológiai Kar)",
+        "operator": "Akademia Górniczo-Hutnicza w Krakowie",
+        "phone": "+48 606 510 084",
+        "tourism": "museum",
+        "website": "http://www.geol.agh.edu.pl/~muzeum/index.php",
+        "wikidata": "Q11786979",
+        "wikipedia": "pl:Muzeum Geologiczne Wydziału Geologii Geofizyki i Ochrony Środowiska AGH"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4031826801,
+      "lat": 50.0617330,
+      "lon": 19.9375856,
+      "tags": {
+        "addr:city": "Kraków",
+        "addr:housenumber": "3",
+        "addr:postcode": "31-042",
+        "addr:street": "Rynek Główny",
+        "fee": "yes",
+        "fee:conditional": "no @ Sunday for unchanging expositions",
+        "name": "Galeria Sztuki Polskiej XIX wieku",
+        "name:en": "National Museum The Nineteenth Century Polish Art Gallery at the Sukiennice",
+        "name:hu": "XIX. századi lengyel művészeti galéria",
+        "name:ja": "織物会館",
+        "opening_hours": "Su 10:00-16:00; Th 10:00-20:00; Tu, We, Fr, Sa 10:00-18:00",
+        "operator": "Muzeum Narodowe w Krakowie",
+        "phone": "+48 12 433 54 00",
+        "tourism": "museum",
+        "website": "https://mnk.pl/oddzial/galeria-sztuki-polskiej/o-oddziale",
+        "wheelchair": "yes",
+        "wikidata": "Q7635861",
+        "wikipedia": "pl:Galeria Sztuki Polskiej XIX wieku w Sukiennicach"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4281228578,
+      "lat": 50.0613744,
+      "lon": 19.9417126,
+      "tags": {
+        "addr:city": "Kraków",
+        "addr:country": "PL",
+        "addr:housenumber": "18",
+        "addr:postcode": "31-027",
+        "addr:street": "Mikołajska",
+        "description:hu": "Maria Angela Truszkowska (1825–99) lengyel rendalapító szerzetesnő",
+        "email": "muzeum-mat@cssf.opoka.org.pl",
+        "fax": "+48 12 4264740",
+        "fee": "yes",
+        "name": "Muzeum i Archiwum Marii Angeli Truszkowskiej",
+        "name:hu": "Maria Angela Truszkowska Múzeum és Levéltár",
+        "opening_hours": "Mo-Fr 10:00-14:00",
+        "operator": "Zgromadzenie Sióstr Felicjanek",
+        "phone": "+48 12 4264740",
+        "start_date": "1999-10-11",
+        "tourism": "museum",
+        "website": "http://www.muzeum-mat.cssf.opoka.org.pl/",
+        "wikidata": "Q11787298",
+        "wikipedia": "pl:Muzeum i Archiwum bł. Marii Angeli Truszkowskiej w Krakowie"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4817320821,
+      "lat": 50.0590085,
+      "lon": 19.9257049,
+      "tags": {
+        "addr:postcode": "31-111",
+        "email": "info@stainedglass.pl",
+        "name": "Muzeum Witrażu w Krakowie",
+        "name:en": "Krakow Workshop and Stained Glass Museum",
+        "name:hu": "Krakkói Ólomüvegablak-múzeum és -műhely",
+        "name:pl": "Muzeum Witrażu w Krakowie",
+        "opening_hours": "Tu-Sa 11:30-18:00",
+        "phone": "+48 512 937 979",
+        "tourism": "museum",
+        "website": "http://muzeumwitrazu.pl",
+        "wikidata": "Q6944430",
+        "wikipedia": "pl:Muzeum Witrażu w Krakowie"
+      }
+    },
+    {
+      "type": "node",
+      "id": 5832155481,
+      "lat": 50.0603006,
+      "lon": 19.9206554,
+      "tags": {
+        "name": "Muzeum Czynu Niepodległościowego",
+        "opening_hours": "\"by appointment\"",
+        "phone": "012-633-47-15",
+        "tourism": "museum",
+        "wikidata": "Q6944404",
+        "wikipedia": "pl:Muzeum Czynu Niepodległościowego"
+      }
+    },
+    {
+      "type": "node",
+      "id": 6220687323,
+      "lat": 50.0646542,
+      "lon": 19.9399553,
+      "tags": {
+        "addr:city": "Kraków",
+        "fee": "yes",
+        "name": "Muzeum XX. Czartoryskich w Krakowie",
+        "opening_hours": "Tu-Su 10:00-18:00",
+        "phone": "+48 12 370 54 60",
+        "tourism": "museum",
+        "website": "http://www.muzeum-czartoryskich.krakow.pl/",
+        "wheelchair": "yes",
+        "wikidata": "Q1450630",
+        "wikipedia": "pl:Muzeum Książąt Czartoryskich w Krakowie"
+      }
+    },
+    {
+      "type": "node",
+      "id": 7611477660,
+      "lat": 50.0577059,
+      "lon": 19.9335060,
+      "tags": {
+        "addr:city": "Kraków",
+        "addr:housenumber": "15",
+        "addr:postcode": "31-101",
+        "addr:street": "Floriana Straszewskiego",
+        "museum": "art",
+        "name": "Muzeum iluzji - Krakil",
+        "name:en": "Museum of illusions",
+        "opening_hours": "Mo-Fr 10:00-19:00; Sa-Su 10:00-20:00; PH off",
+        "phone": "+48 513 050 220",
+        "tourism": "museum",
+        "website": "https://www.krakil.pl/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8261763064,
+      "lat": 50.0619534,
+      "lon": 19.9401204,
+      "tags": {
+        "fee": "yes",
+        "fee:conditional": "no @ We",
+        "name": "Kamienica Hipolitów",
+        "tourism": "museum",
+        "website": "https://muzeumkrakowa.pl/oddzialy/kamienica-hipolitow"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8787175360,
+      "lat": 50.0640409,
+      "lon": 19.9406218,
+      "tags": {
+        "addr:city": "Kraków",
+        "addr:housenumber": "32",
+        "addr:postcode": "31-021",
+        "addr:street": "Floriańska",
+        "description": "Muzeum figur woskowych",
+        "description:hu": "Panoptikum: viaszfigurák múzeuma",
+        "fee": "yes",
+        "museum": "art",
+        "name": "Wax Museum",
+        "opening_hours": "Mo-Th 10:00-22:00; Fr-Sa 10:00-23:00",
+        "operator:type": "private",
+        "phone": "+48 502 799 445",
+        "tourism": "museum",
+        "website": "https://www.poloniawaxmuseum.com/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9257970671,
+      "lat": 50.0608397,
+      "lon": 19.9377783,
+      "tags": {
+        "fee": "yes",
+        "museum": "archaeological",
+        "name": "Kościół Świętego Wojciecha - Oddział Muzeum Archeologicznego w Krakowie",
+        "opening_hours": "May - October",
+        "opening_hours:source": "https://ma.krakow.pl/odwiedz-muzeum/godziny-otwarcia/",
+        "operator": "Województwo Małopolskie",
+        "operator:type": "public",
+        "tourism": "museum"
+      }
+    },
+    {
+      "type": "node",
+      "id": 10573734931,
+      "lat": 50.0601301,
+      "lon": 19.9399170,
+      "tags": {
+        "addr:city": "Kraków",
+        "addr:country": "PL",
+        "addr:housenumber": "12",
+        "addr:postcode": "31-043",
+        "addr:street": "Stolarska",
+        "email": "kontakt@muzeumdominikanow.pl",
+        "fee": "no",
+        "mobile": "+48 694 480 689",
+        "museum": "art",
+        "name": "Muzeum Dominikanów",
+        "opening_hours": "Th 10:00-16:00; Fr 10:00-18:00; Sa 10:00-16:00",
+        "operator": "Klasztor Ojców Dominikanów",
+        "operator:type": "religious",
+        "reservation": "required",
+        "start_date": "2022",
+        "subject": "arts;history",
+        "tourism": "museum",
+        "website": "http://muzeumdominikanow.pl/",
+        "wheelchair": "no"
+      }
+    }
+  ]
+}

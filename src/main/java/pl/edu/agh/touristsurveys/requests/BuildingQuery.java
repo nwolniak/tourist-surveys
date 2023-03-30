@@ -21,15 +21,19 @@ public class BuildingQuery {
         OverpassFilterQuery filterQuery = new OverpassQuery()
                 .format(OutputFormat.JSON)
                 .timeout(100)
-                .boundingBox(southernLat, northernLat, westernLon, easternLon)
+                .boundingBox(southernLat, westernLon, northernLat, easternLon)
                 .filterQuery()
-                .way();
+                .node();
 
         tagMap.forEach(filterQuery::tag);
 
         String query = filterQuery
                 .end()
-                .build();
+                .build()
+                .replace("\"", "")
+                .replace(" ", "")
+                .replace("<;", "")
+                .concat("out body;");
 
         return new BuildingQuery(query);
     }
@@ -38,15 +42,19 @@ public class BuildingQuery {
         OverpassFilterQuery filterQuery = new OverpassQuery()
                 .format(OutputFormat.JSON)
                 .timeout(100)
-                .boundingBox(southernLat, northernLat, westernLon, easternLon)
+                .boundingBox(southernLat, westernLon, northernLat, easternLon)
                 .filterQuery()
-                .way();
+                .node();
 
         tagList.forEach(filterQuery::tag);
 
         String query = filterQuery
                 .end()
-                .build();
+                .build()
+                .replace("\"", "")
+                .replace(" ", "")
+                .replace("<;", "")
+                .concat("out body;");
 
         return new BuildingQuery(query);
     }
