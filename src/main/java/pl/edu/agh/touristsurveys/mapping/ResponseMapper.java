@@ -3,10 +3,13 @@ package pl.edu.agh.touristsurveys.mapping;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import pl.edu.agh.touristsurveys.model.Building;
 
 import java.util.List;
 
+@Configuration
 public class ResponseMapper {
 
     private final Gson gson = new Gson();

@@ -11,5 +11,5 @@ public class Building {
     private final String type;
     private final double lon;
     private final double lat;
-
+    private final BuildingTags tags;
 }

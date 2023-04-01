@@ -29,14 +29,14 @@ public class TouristSurveysApplication implements ApplicationRunner {
                 50.0707757,
                 19.9248071,
                 19.9541481);
-        overpassService.getBuildings(buildingQuery);
+        var a = overpassService.getBuildings(buildingQuery);
 
-        BuildingQuery buildingQuery2 = BuildingQuery.singleTagList(
-                List.of("museum"),
-                50.0462364,
-                50.0707757,
-                19.9248071,
-                19.9541481);
-        overpassService.getBuildings(buildingQuery2);
+//        BuildingQuery buildingQuery2 = BuildingQuery.singleTagList(
+//                List.of("museum"),
+//                50.0462364,
+//                50.0707757,
+//                19.9248071,
+//                19.9541481);
+//        overpassService.getBuildings(buildingQuery2);
     }
 }
