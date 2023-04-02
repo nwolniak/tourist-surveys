@@ -6,6 +6,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import pl.edu.agh.touristsurveys.requests.BuildingQuery;
+import pl.edu.agh.touristsurveys.service.BuildingService;
 import pl.edu.agh.touristsurveys.service.OverpassService;
 
 import java.util.List;
@@ -23,13 +24,13 @@ public class TouristSurveysApplication implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        BuildingQuery buildingQuery = BuildingQuery.multipleTagMap(
-                Map.of("tourism", "museum"),
-                50.0462364,
-                50.0707757,
-                19.9248071,
-                19.9541481);
-        var a = overpassService.getBuildings(buildingQuery);
+//        BuildingQuery buildingQuery = BuildingQuery.multipleTagMap(
+//                Map.of("tourism", "museum"),
+//                50.0462364,
+//                50.0707757,
+//                19.9248071,
+//                19.9541481);
+//        var a = overpassService.getBuildings(buildingQuery);
 
 //        BuildingQuery buildingQuery2 = BuildingQuery.singleTagList(
 //                List.of("museum"),
@@ -38,5 +39,9 @@ public class TouristSurveysApplication implements ApplicationRunner {
 //                19.9248071,
 //                19.9541481);
 //        overpassService.getBuildings(buildingQuery2);
+
+        BuildingService bs = new BuildingService(50.046, 19.924, 0.1, overpassService);
+        var museums = bs.getMuseums();
+        var hotels = bs.getHotels();
     }
 }
