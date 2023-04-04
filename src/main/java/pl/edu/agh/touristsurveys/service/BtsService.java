@@ -33,6 +33,8 @@ public class BtsService {
         MapService mp = new MapService(overpassService);
         var museums = mp.getAllMuseums(city);
         var accommodation = mp.getAllAccommodation(city);
+        var transport = mp.getAllTransport(city);
+        var food = mp.getAllFood(city);
     }
 
     public void seekForMuseums(double dist) {
