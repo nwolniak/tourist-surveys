@@ -12,13 +12,12 @@ import java.util.List;
 public class BtsService {
 
     private City city;
-    private final List<Coordinates> coordinatesList;
+    private List<Coordinates> coordinatesList;
     private OverpassService overpassService;
     private CityPOIs POIs;
 
-    public BtsService(OverpassService overpassService, List<Coordinates> coordinatesList) {
+    public BtsService(OverpassService overpassService) {
         this.overpassService = overpassService;
-        this.coordinatesList = coordinatesList;
     }
 
     public void setCity(City city) {
@@ -26,21 +25,14 @@ public class BtsService {
         this.POIs = new CityPOIs();
     }
 
+    public void setCoordinates(List<Coordinates> coordinates) {
+        this.coordinatesList = coordinates;
+    }
+
     public void getAllCityData() throws Exception {
-        BuildingQuery buildingQuery2;
-
-        if (city == City.KRAKOW) {
-            buildingQuery2 = BuildingQuery.singleTagList(
-                    List.of("museum"),
-                    50.0462364,
-                    50.0707757,
-                    19.9248071,
-                    19.9541481);
-        } else {
-            throw new Exception();
-        }
-
-        POIs.museum = overpassService.getBuildings(buildingQuery2);
+        MapService mp = new MapService(overpassService);
+        var museums = mp.getAllMuseums(city);
+        var accommodation = mp.getAllAccommodation(city);
     }
 
     public void seekForMuseums(double dist) {

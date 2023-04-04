@@ -46,7 +46,7 @@ public class TouristSurveysApplication implements ApplicationRunner {
         var c1 = new Coordinates(19.9399170, 50.0601301);
         var c2 = new Coordinates(19.9999170, 50.0601301);
         var c3 = new Coordinates(19.9415137, 50.0554747);
-        var c4 = new Coordinates(1, 50.0554747);
+        var c4 = new Coordinates(19.4415137, 50.0554747);
 
         var coordinates = new ArrayList<Coordinates>();
         coordinates.add(c1);
@@ -54,8 +54,9 @@ public class TouristSurveysApplication implements ApplicationRunner {
         coordinates.add(c3);
         coordinates.add(c4);
 
-        BtsService btsService = new BtsService(overpassService, coordinates);
+        BtsService btsService = new BtsService(overpassService);
         btsService.setCity(City.KRAKOW);
+        btsService.setCoordinates(coordinates);
         btsService.getAllCityData();
         btsService.seekForMuseums(10);
 
