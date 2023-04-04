@@ -4,40 +4,44 @@ import pl.edu.agh.touristsurveys.model.Building;
 import pl.edu.agh.touristsurveys.model.City;
 import pl.edu.agh.touristsurveys.model.CityPOIs;
 import pl.edu.agh.touristsurveys.model.Coordinates;
-import pl.edu.agh.touristsurveys.requests.BuildingQuery;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BtsService {
+public class SurveyService {
 
     private City city;
     private List<Coordinates> coordinatesList;
     private OverpassService overpassService;
     private CityPOIs POIs;
 
-    public BtsService(OverpassService overpassService) {
+    public SurveyService(OverpassService overpassService) {
         this.overpassService = overpassService;
     }
 
     public void setCity(City city) {
         this.city = city;
-        this.POIs = new CityPOIs();
+        this.POIs = new CityPOIs(city);
     }
 
     public void setCoordinates(List<Coordinates> coordinates) {
         this.coordinatesList = coordinates;
     }
 
-    public void getAllCityData() throws Exception {
-        MapService mp = new MapService(overpassService);
-        var museums = mp.getAllMuseums(city);
-        var accommodation = mp.getAllAccommodation(city);
-        var transport = mp.getAllTransport(city);
-        var food = mp.getAllFood(city);
+    public List<Coordinates> getCoordinatesList() {
+        return coordinatesList;
     }
 
-    public void seekForMuseums(double dist) {
+    public void getAllCityData() throws Exception {
+        MapService mp = new MapService(overpassService);
+        POIs.setMuseum(mp.getAllMuseums(city));
+        POIs.setAccommodation(mp.getAllAccommodation(city));
+        POIs.setTransport(mp.getAllTransport(city));
+        POIs.setFood(mp.getAllFood(city));
+    }
+
+    public void seekForPlaces(double dist) {
+        //TODO: change it to foreach for every defined type of place
         for (var c : coordinatesList) {
             List<Building> buildings = new ArrayList<Building>();
             for (var m : POIs.museum) {
@@ -47,6 +51,39 @@ public class BtsService {
                 }
             }
             c.setMuseums(buildings);
+        }
+
+        for (var c : coordinatesList) {
+            List<Building> buildings = new ArrayList<Building>();
+            for (var m : POIs.transport) {
+                var dis = distance(c.latitude, m.getLat(), c.longitude, m.getLon());
+                if (dis <= dist) {
+                    buildings.add(m);
+                }
+            }
+            c.setTransport(buildings);
+        }
+
+        for (var c : coordinatesList) {
+            List<Building> buildings = new ArrayList<Building>();
+            for (var m : POIs.food) {
+                var dis = distance(c.latitude, m.getLat(), c.longitude, m.getLon());
+                if (dis <= dist) {
+                    buildings.add(m);
+                }
+            }
+            c.setFood(buildings);
+        }
+
+        for (var c : coordinatesList) {
+            List<Building> buildings = new ArrayList<Building>();
+            for (var m : POIs.accommodation) {
+                var dis = distance(c.latitude, m.getLat(), c.longitude, m.getLon());
+                if (dis <= dist) {
+                    buildings.add(m);
+                }
+            }
+            c.setAccommodation(buildings);
         }
     }
 

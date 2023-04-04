@@ -19,9 +19,9 @@ public class OverpassService {
     private final ResponseMapper responseMapper;
 
     public List<Building> getBuildings(BuildingQuery buildingQuery) {
-        log.info("Query: {}", buildingQuery.getQuery());
+//        log.info("Query: {}", buildingQuery.getQuery());
         String response = overpassWebClient.get(buildingQuery);
-        log.info("Response: {}", response);
+//        log.info("Response: {}", response);
         return responseMapper.parseAndMap(response);
     }
 
