@@ -1,5 +1,3 @@
 package pl.edu.agh.touristsurveys.model;
 
-public class BuildingTags {
-    public String name;
-}
+public record BuildingTags(String name) {}

@@ -1,5 +1,6 @@
 package pl.edu.agh.touristsurveys.service;
 
+import lombok.Getter;
 import pl.edu.agh.touristsurveys.model.Building;
 import pl.edu.agh.touristsurveys.model.City;
 import pl.edu.agh.touristsurveys.model.CityPOIs;
@@ -8,6 +9,7 @@ import pl.edu.agh.touristsurveys.model.Coordinates;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SurveyService {
 
     private City city;
@@ -44,8 +46,8 @@ public class SurveyService {
         //TODO: change it to foreach for every defined type of place
         for (var c : coordinatesList) {
             List<Building> buildings = new ArrayList<Building>();
-            for (var m : POIs.museum) {
-                var dis = distance(c.getLatitude(), m.getLat(), c.getLongitude(), m.getLon());
+            for (var m : POIs.getMuseum()) {
+                var dis = distance(c.getLatitude(), m.lat(), c.getLongitude(), m.lon());
                 if (dis <= dist) {
                     buildings.add(m);
                 }
@@ -55,8 +57,8 @@ public class SurveyService {
 
         for (var c : coordinatesList) {
             List<Building> buildings = new ArrayList<Building>();
-            for (var m : POIs.transport) {
-                var dis = distance(c.getLatitude(), m.getLat(), c.getLongitude(), m.getLon());
+            for (var m : POIs.getTransport()) {
+                var dis = distance(c.getLatitude(), m.lat(), c.getLongitude(), m.lon());
                 if (dis <= dist) {
                     buildings.add(m);
                 }
@@ -66,8 +68,8 @@ public class SurveyService {
 
         for (var c : coordinatesList) {
             List<Building> buildings = new ArrayList<Building>();
-            for (var m : POIs.food) {
-                var dis = distance(c.getLatitude(), m.getLat(), c.getLongitude(), m.getLon());
+            for (var m : POIs.getFood()) {
+                var dis = distance(c.getLatitude(), m.lat(), c.getLongitude(), m.lon());
                 if (dis <= dist) {
                     buildings.add(m);
                 }
@@ -77,8 +79,8 @@ public class SurveyService {
 
         for (var c : coordinatesList) {
             List<Building> buildings = new ArrayList<Building>();
-            for (var m : POIs.accommodation) {
-                var dis = distance(c.getLatitude(), m.getLat(), c.getLongitude(), m.getLon());
+            for (var m : POIs.getAccommodation()) {
+                var dis = distance(c.getLatitude(), m.lat(), c.getLongitude(), m.lon());
                 if (dis <= dist) {
                     buildings.add(m);
                 }

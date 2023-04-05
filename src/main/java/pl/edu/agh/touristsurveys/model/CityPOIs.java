@@ -1,20 +1,19 @@
 package pl.edu.agh.touristsurveys.model;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
 @Setter
 @Getter
+@RequiredArgsConstructor
 public class CityPOIs {
     private final City city;
-    public List<Building> museum;
-    public List<Building> accommodation;
-    public List<Building> transport;
-    public List<Building> food;
+    private List<Building> museum;
+    private List<Building> accommodation;
+    private List<Building> transport;
+    private List<Building> food;
 
-    public CityPOIs(City city) {
-        this.city = city;
-    }
 }

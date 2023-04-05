@@ -66,7 +66,7 @@ public class MapService {
         var food_courts = getSustenanceBuilding(city, "food_court");
         var ice_creams = getSustenanceBuilding(city, "ice_cream");
         var pubs = getSustenanceBuilding(city, "pub");
-        //var restaurant = getSustenanceBuilding(city, "restaurant"); //TODO: Exceeded limit on max bytes to buffer : 262144
+//        var restaurant = getSustenanceBuilding(city, "restaurant"); //TODO: Exceeded limit on max bytes to buffer : 262144
 
         var food = new ArrayList<Building>(bars);
         food.addAll(biergartens);

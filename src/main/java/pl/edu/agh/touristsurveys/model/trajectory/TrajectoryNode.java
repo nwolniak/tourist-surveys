@@ -20,7 +20,6 @@ public class TrajectoryNode {
     @CsvCustomBindByName(column = "latitude", converter = DoubleConverter.class)
     private double lat;
 
-    @CsvBindByName(column = "timestamp")
     @CsvCustomBindByName(column = "timestamp", converter = TimestampConverter.class)
     private LocalDateTime timestamp;
 
