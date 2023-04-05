@@ -109,6 +109,6 @@ public class MapService {
         cityBoundaries = new HashMap<City, Double[]>();
 
         cityBoundaries.put(City.KRAKOW, new Double[]{49.967, 50.201, 19.734, 20.17});
-        cityBoundaries.put(City.KYIV, new Double[]{50.0462364, 50.0707757, 19.9248071, 19.954148});
+        cityBoundaries.put(City.PRAGUE, new Double[]{49.945, 50.178, 14.224, 14.708});
     }
 }

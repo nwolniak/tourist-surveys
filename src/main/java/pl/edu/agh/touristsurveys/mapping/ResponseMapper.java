@@ -3,12 +3,12 @@ package pl.edu.agh.touristsurveys.mapping;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import pl.edu.agh.touristsurveys.model.Building;
 
 import java.util.List;
 
-@Service
+@Component
 public class ResponseMapper {
 
     private final Gson gson = new Gson();

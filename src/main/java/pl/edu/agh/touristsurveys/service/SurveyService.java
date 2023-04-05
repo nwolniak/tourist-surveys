@@ -12,7 +12,7 @@ public class SurveyService {
 
     private City city;
     private List<Coordinates> coordinatesList;
-    private OverpassService overpassService;
+    private final OverpassService overpassService;
     private CityPOIs POIs;
 
     public SurveyService(OverpassService overpassService) {
@@ -45,7 +45,7 @@ public class SurveyService {
         for (var c : coordinatesList) {
             List<Building> buildings = new ArrayList<Building>();
             for (var m : POIs.museum) {
-                var dis = distance(c.latitude, m.getLat(), c.longitude, m.getLon());
+                var dis = distance(c.getLatitude(), m.getLat(), c.getLongitude(), m.getLon());
                 if (dis <= dist) {
                     buildings.add(m);
                 }
@@ -56,7 +56,7 @@ public class SurveyService {
         for (var c : coordinatesList) {
             List<Building> buildings = new ArrayList<Building>();
             for (var m : POIs.transport) {
-                var dis = distance(c.latitude, m.getLat(), c.longitude, m.getLon());
+                var dis = distance(c.getLatitude(), m.getLat(), c.getLongitude(), m.getLon());
                 if (dis <= dist) {
                     buildings.add(m);
                 }
@@ -67,7 +67,7 @@ public class SurveyService {
         for (var c : coordinatesList) {
             List<Building> buildings = new ArrayList<Building>();
             for (var m : POIs.food) {
-                var dis = distance(c.latitude, m.getLat(), c.longitude, m.getLon());
+                var dis = distance(c.getLatitude(), m.getLat(), c.getLongitude(), m.getLon());
                 if (dis <= dist) {
                     buildings.add(m);
                 }
@@ -78,7 +78,7 @@ public class SurveyService {
         for (var c : coordinatesList) {
             List<Building> buildings = new ArrayList<Building>();
             for (var m : POIs.accommodation) {
-                var dis = distance(c.latitude, m.getLat(), c.longitude, m.getLon());
+                var dis = distance(c.getLatitude(), m.getLat(), c.getLongitude(), m.getLon());
                 if (dis <= dist) {
                     buildings.add(m);
                 }
