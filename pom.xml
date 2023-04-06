@@ -27,12 +27,6 @@
         </dependency>
 
         <dependency>
-            <groupId>hu.supercluster</groupId>
-            <artifactId>overpasser</artifactId>
-            <version>0.2.2</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>

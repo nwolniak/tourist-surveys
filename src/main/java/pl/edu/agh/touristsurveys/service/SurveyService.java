@@ -1,95 +1,27 @@
 package pl.edu.agh.touristsurveys.service;
 
-import lombok.Getter;
+import org.springframework.stereotype.Service;
 import pl.edu.agh.touristsurveys.model.Building;
-import pl.edu.agh.touristsurveys.model.City;
-import pl.edu.agh.touristsurveys.model.CityPOIs;
-import pl.edu.agh.touristsurveys.model.Coordinates;
+import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Getter
+@Service
 public class SurveyService {
 
-    private City city;
-    private List<Coordinates> coordinatesList;
-    private final OverpassService overpassService;
-    private CityPOIs POIs;
-
-    public SurveyService(OverpassService overpassService) {
-        this.overpassService = overpassService;
+    public List<Building> filterNearestBuildings(List<TrajectoryNode> trajectoryNodes, List<Building> allBuildings, double dist) {
+        return allBuildings.stream()
+                .filter(building -> checkDistanceFromTrajectory(building, trajectoryNodes, dist))
+                .toList();
     }
 
-    public void setCity(City city) {
-        this.city = city;
-        this.POIs = new CityPOIs(city);
+    private static boolean checkDistanceFromTrajectory(Building building, List<TrajectoryNode> trajectoryNodes, double threshold) {
+        return trajectoryNodes.stream()
+                .map(trajectoryNode -> distance(trajectoryNode.getLat(), building.lat(), trajectoryNode.getLon(), building.lon()))
+                .anyMatch(distance -> distance < threshold);
     }
 
-    public void setCoordinates(List<Coordinates> coordinates) {
-        this.coordinatesList = coordinates;
-    }
-
-    public List<Coordinates> getCoordinatesList() {
-        return coordinatesList;
-    }
-
-    public void getAllCityData() throws Exception {
-        MapService mp = new MapService(overpassService);
-        POIs.setMuseum(mp.getAllMuseums(city));
-        POIs.setAccommodation(mp.getAllAccommodation(city));
-        POIs.setTransport(mp.getAllTransport(city));
-        POIs.setFood(mp.getAllFood(city));
-    }
-
-    public void seekForPlaces(double dist) {
-        //TODO: change it to foreach for every defined type of place
-        for (var c : coordinatesList) {
-            List<Building> buildings = new ArrayList<Building>();
-            for (var m : POIs.getMuseum()) {
-                var dis = distance(c.getLatitude(), m.lat(), c.getLongitude(), m.lon());
-                if (dis <= dist) {
-                    buildings.add(m);
-                }
-            }
-            c.setMuseums(buildings);
-        }
-
-        for (var c : coordinatesList) {
-            List<Building> buildings = new ArrayList<Building>();
-            for (var m : POIs.getTransport()) {
-                var dis = distance(c.getLatitude(), m.lat(), c.getLongitude(), m.lon());
-                if (dis <= dist) {
-                    buildings.add(m);
-                }
-            }
-            c.setTransport(buildings);
-        }
-
-        for (var c : coordinatesList) {
-            List<Building> buildings = new ArrayList<Building>();
-            for (var m : POIs.getFood()) {
-                var dis = distance(c.getLatitude(), m.lat(), c.getLongitude(), m.lon());
-                if (dis <= dist) {
-                    buildings.add(m);
-                }
-            }
-            c.setFood(buildings);
-        }
-
-        for (var c : coordinatesList) {
-            List<Building> buildings = new ArrayList<Building>();
-            for (var m : POIs.getAccommodation()) {
-                var dis = distance(c.getLatitude(), m.lat(), c.getLongitude(), m.lon());
-                if (dis <= dist) {
-                    buildings.add(m);
-                }
-            }
-            c.setAccommodation(buildings);
-        }
-    }
-
-    public static double distance(double lat1, double lat2, double lon1, double lon2) {
+    private static double distance(double lat1, double lat2, double lon1, double lon2) {
 
         final int R = 6371; // Radius of the earth
 
