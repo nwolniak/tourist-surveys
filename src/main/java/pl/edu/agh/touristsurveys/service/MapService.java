@@ -2,12 +2,11 @@ package pl.edu.agh.touristsurveys.service;
 
 import pl.edu.agh.touristsurveys.model.Building;
 import pl.edu.agh.touristsurveys.model.City;
-import pl.edu.agh.touristsurveys.requests.BuildingQuery;
+import pl.edu.agh.touristsurveys.requests.Query;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MapService {
     private final OverpassService overpassService;
@@ -21,14 +20,16 @@ public class MapService {
     public List<Building> getAllMuseums(City city) {
         var boundaries = cityBoundaries.get(city);
 
-        BuildingQuery buildingQuery = BuildingQuery.singleTagList(
-                List.of("museum"),
-                boundaries[0], //southernLat
-                boundaries[1], //northernLat
-                boundaries[2], //westernLon
-                boundaries[3]); //easterLon
+        Query query = Query.builder()
+                .timeout(100)
+                .southernLat(boundaries[0])
+                .northernLat(boundaries[1])
+                .westernLon(boundaries[2])
+                .easterLon(boundaries[3])
+                .tags(List.of("museum"))
+                .build();
 
-        return overpassService.getBuildings(buildingQuery);
+        return overpassService.getBuildings(query);
     }
 
     public List<Building> getAllAccommodation(City city) {
@@ -48,14 +49,16 @@ public class MapService {
     public List<Building> getAllTransport(City city) {
         var boundaries = cityBoundaries.get(city);
 
-        BuildingQuery buildingQuery = BuildingQuery.multipleTagMap(
-                Map.of("public_transport", "station"), //TODO: airports(which are lines), ferry terminals
-                boundaries[0], //southernLat
-                boundaries[1], //northernLat
-                boundaries[2], //westernLon
-                boundaries[3]); //easterLon
+        Query query = Query.builder()
+                .timeout(100)
+                .southernLat(boundaries[0])
+                .northernLat(boundaries[1])
+                .westernLon(boundaries[2])
+                .easterLon(boundaries[3])
+                .tags(List.of("public_transport=station")) //TODO: airports(which are lines), ferry terminals
+                .build();
 
-        return overpassService.getBuildings(buildingQuery);
+        return overpassService.getBuildings(query);
     }
 
     public List<Building> getAllFood(City city) {
@@ -66,7 +69,7 @@ public class MapService {
         var food_courts = getSustenanceBuilding(city, "food_court");
         var ice_creams = getSustenanceBuilding(city, "ice_cream");
         var pubs = getSustenanceBuilding(city, "pub");
-//        var restaurant = getSustenanceBuilding(city, "restaurant"); //TODO: Exceeded limit on max bytes to buffer : 262144
+        var restaurant = getSustenanceBuilding(city, "restaurant");
 
         var food = new ArrayList<Building>(bars);
         food.addAll(biergartens);
@@ -74,7 +77,7 @@ public class MapService {
         food.addAll(food_courts);
         food.addAll(ice_creams);
         food.addAll(pubs);
-        //food.addAll(restaurant);
+        food.addAll(restaurant);
 
         return food;
     }
@@ -82,27 +85,31 @@ public class MapService {
     public List<Building> getTourismBuilding(City city, String key) {
         var boundaries = cityBoundaries.get(city);
 
-        BuildingQuery buildingQuery = BuildingQuery.multipleTagMap(
-                Map.of("tourism", key),
-                boundaries[0], //southernLat
-                boundaries[1], //northernLat
-                boundaries[2], //westernLon
-                boundaries[3]); //easterLon
+        Query query = Query.builder()
+                .timeout(100)
+                .southernLat(boundaries[0])
+                .northernLat(boundaries[1])
+                .westernLon(boundaries[2])
+                .easterLon(boundaries[3])
+                .tags(List.of(String.format("tourism=%s", key)))
+                .build();
 
-        return overpassService.getBuildings(buildingQuery);
+        return overpassService.getBuildings(query);
     }
 
     public List<Building> getSustenanceBuilding(City city, String key) {
         var boundaries = cityBoundaries.get(city);
 
-        BuildingQuery buildingQuery = BuildingQuery.multipleTagMap(
-                Map.of("amenity", key),
-                boundaries[0], //southernLat
-                boundaries[1], //northernLat
-                boundaries[2], //westernLon
-                boundaries[3]); //easterLon
+        Query query = Query.builder()
+                .timeout(100)
+                .southernLat(boundaries[0])
+                .northernLat(boundaries[1])
+                .westernLon(boundaries[2])
+                .easterLon(boundaries[3])
+                .tags(List.of(String.format("amenity=%s", key)))
+                .build();
 
-        return overpassService.getBuildings(buildingQuery);
+        return overpassService.getBuildings(query);
     }
 
     private void initBoundaries() {
