@@ -13,9 +13,11 @@ import pl.edu.agh.touristsurveys.parser.TrajectoryParser;
 import pl.edu.agh.touristsurveys.service.MapService;
 import pl.edu.agh.touristsurveys.service.SurveyService;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class TouristSurveysApplication implements ApplicationRunner {
@@ -58,7 +60,7 @@ public class TouristSurveysApplication implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         List<TrajectoryNode> trajectoryNodes = trajectoryParser.parseTrajectory();
         List<Building> allBuildings = mapService.getAllBuildings(cityMap.get(City.PRAGUE), searchTags);
-        List<Landmark> landmarksWithVisitHistory = surveyService.getVisitHistory(trajectoryNodes, allBuildings, 100);
+        List<Landmark> landmarksWithVisitHistory = surveyService.getVisitHistory(trajectoryNodes, allBuildings, 5);
 
         System.out.println(String.format("\n============TRAJECTORIES[%s]=============", trajectoryNodes.size()));
         trajectoryNodes.stream()
@@ -81,6 +83,12 @@ public class TouristSurveysApplication implements ApplicationRunner {
                 .limit(10)
                 .forEach(System.out::println);
 
-        var a = 0;
+        Optional<Landmark> earliestLandmark = landmarksWithVisitHistory.stream()
+                .filter(landmark -> landmark.getTags().containsKey("public_transport"))
+                .min(Comparator.comparing(Landmark::getEnterTime));
+
+        System.out.println("\n============HOW_DID_HE_GET_TO_THE_CITY============="); //TODO: MAKE CLASS FOR ALL OF THAT FUNCTIONS
+        earliestLandmark.ifPresent(System.out::println);
+
     }
 }

@@ -21,6 +21,17 @@ public class Landmark {
         return timeSpend;
     }
 
+    public LocalDateTime getEnterTime(){
+        return positionList.stream()
+                .min(Comparator.comparing(Position::getTimestamp))
+                .map(Position::getTimestamp)
+                .orElse(null);
+    }
+
+    public Map<String, String> getTags() {
+        return tags;
+    }
+
     public void calculateTimeSpend() {
 
         List<LocalDateTime> timestamps = positionList.stream()
