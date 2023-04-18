@@ -1,5 +1,5 @@
 package pl.edu.agh.touristsurveys.model;
 
-public record Building(String id, String type, BuildingTags tags, double lon, double lat) {}
+import java.util.Map;
 
-record BuildingTags(String name) {}
+public record Building(String id, String type, Map<String, String> tags, double lon, double lat) {}
