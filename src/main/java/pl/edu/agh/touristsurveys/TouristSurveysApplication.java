@@ -56,7 +56,6 @@ public class TouristSurveysApplication implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         List<TrajectoryNode> trajectoryNodes = trajectoryParser.parseTrajectory();
         List<Building> allBuildings = mapService.getAllBuildings(cityMap.get(City.PRAGUE), searchTags);
-        List<Building> nearestBuildings = surveyService.filterNearestBuildings(trajectoryNodes, allBuildings, 100);
 
         System.out.println(String.format("============TRAJECTORIES[%s]=============", trajectoryNodes.size()));
         trajectoryNodes.stream()
@@ -65,12 +64,10 @@ public class TouristSurveysApplication implements ApplicationRunner {
 
         System.out.println(String.format("============ALL_BUILDINGS[%s]=============", allBuildings.size()));
         allBuildings.stream()
+                .filter(x -> !x.type().equals("node"))
                 .limit(10)
                 .forEach(System.out::println);
 
-        System.out.println(String.format("============NEAREST_BUILDINGS[%s]=============", nearestBuildings.size()));
-        nearestBuildings.stream()
-                .limit(10)
-                .forEach(System.out::println);
+        var landmarksWithVisitHistory = surveyService.getVisitHistory(trajectoryNodes, allBuildings, 100);
     }
 }

@@ -1,6 +1,7 @@
 package pl.edu.agh.touristsurveys.mapping;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,9 @@ import java.util.List;
 @Component
 public class ResponseMapper {
 
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Building.class, new BuildingDeserializer())
+            .create();
 
     public List<Building> parseAndMap(String json) {
         List<JsonElement> jsonElements = JsonParser

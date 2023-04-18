@@ -2,8 +2,11 @@ package pl.edu.agh.touristsurveys.service;
 
 import org.springframework.stereotype.Service;
 import pl.edu.agh.touristsurveys.model.Building;
+import pl.edu.agh.touristsurveys.model.Landmark;
+import pl.edu.agh.touristsurveys.model.Position;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,6 +22,28 @@ public class SurveyService {
         return trajectoryNodes.stream()
                 .map(trajectoryNode -> distance(trajectoryNode.getLat(), building.lat(), trajectoryNode.getLon(), building.lon()))
                 .anyMatch(distance -> distance < threshold);
+    }
+
+    public List<Landmark> getVisitHistory(List<TrajectoryNode> trajectoryNodes, List<Building> allBuildings, double threshold) {
+        List<Landmark> landmarks = new ArrayList<>();
+
+        for (Building building : allBuildings) {
+            List<Position> positions = new ArrayList<>();
+
+            for (TrajectoryNode node : trajectoryNodes) {
+                double dist = distance(node.getLat(), building.lat(), node.getLon(), building.lon());
+
+                if (dist < threshold) {
+                    positions.add(new Position(node.getTimestamp(), dist, node.getLon(), node.getLat()));
+                }
+            }
+
+            if (!positions.isEmpty()) {
+                landmarks.add(new Landmark(building.tags().getOrDefault("name", ""), building.tags(), building.lon(), building.lat(), positions));
+            }
+        }
+
+        return landmarks;
     }
 
     private static double distance(double lat1, double lat2, double lon1, double lon2) {
