@@ -8,12 +8,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
-import pl.edu.agh.touristsurveys.requests.BuildingQuery;
+import pl.edu.agh.touristsurveys.requests.Query;
 import pl.edu.agh.touristsurveys.utils.Constants;
 import pl.edu.agh.touristsurveys.utils.JsonUtil;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,18 +44,20 @@ public class OverpassWebClientTest {
     public void webClientTest() throws InterruptedException {
         // init
         String museumsJson = JsonUtil.getJsonAsString(Constants.MUSEUM_RESPONSE_JSON_PATH);
-        BuildingQuery buildingQuery = BuildingQuery.multipleTagMap(
-                Map.of("tourism", "museum"),
-                50.0462364,
-                50.0707757,
-                19.9248071,
-                19.9541481);
+        Query query = Query.builder()
+                .timeout(100)
+                .southernLat(50.0462364)
+                .northernLat(50.0707757)
+                .westernLon(19.9248071)
+                .easterLon(19.9541481)
+                .tags(List.of("tourism=museum"))
+                .build();
 
         // mock
         mockWebServer.enqueue(new MockResponse().setBody(museumsJson));
 
         // get
-        String response = overpassWebClient.get(buildingQuery);
+        String response = overpassWebClient.get(query);
 
         // check
         RecordedRequest request = mockWebServer.takeRequest();
