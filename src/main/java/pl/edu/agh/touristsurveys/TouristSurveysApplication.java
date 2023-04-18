@@ -72,5 +72,11 @@ public class TouristSurveysApplication implements ApplicationRunner {
         nearestBuildings.stream()
                 .limit(10)
                 .forEach(System.out::println);
+
+        List<Building> visitedBuildings = surveyService.filterVisitedBuildings(trajectoryNodes, nearestBuildings);
+        System.out.println(String.format("============VISITED_BUILDINGS[%s]=============", visitedBuildings.size()));
+        visitedBuildings.stream()
+                .limit(10)
+                .forEach(System.out::println);
     }
 }
