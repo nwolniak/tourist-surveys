@@ -7,11 +7,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import pl.edu.agh.touristsurveys.model.Building;
 import pl.edu.agh.touristsurveys.model.City;
+import pl.edu.agh.touristsurveys.model.Landmark;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 import pl.edu.agh.touristsurveys.parser.TrajectoryParser;
 import pl.edu.agh.touristsurveys.service.MapService;
 import pl.edu.agh.touristsurveys.service.SurveyService;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -56,18 +58,29 @@ public class TouristSurveysApplication implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         List<TrajectoryNode> trajectoryNodes = trajectoryParser.parseTrajectory();
         List<Building> allBuildings = mapService.getAllBuildings(cityMap.get(City.PRAGUE), searchTags);
+        List<Landmark> landmarksWithVisitHistory = surveyService.getVisitHistory(trajectoryNodes, allBuildings, 100);
 
-        System.out.println(String.format("============TRAJECTORIES[%s]=============", trajectoryNodes.size()));
+        System.out.println(String.format("\n============TRAJECTORIES[%s]=============", trajectoryNodes.size()));
         trajectoryNodes.stream()
                 .limit(10)
                 .forEach(System.out::println);
 
-        System.out.println(String.format("============ALL_BUILDINGS[%s]=============", allBuildings.size()));
+        System.out.println(String.format("\n============ALL_BUILDINGS[%s]=============", allBuildings.size()));
         allBuildings.stream()
                 .filter(x -> !x.type().equals("node"))
                 .limit(10)
                 .forEach(System.out::println);
 
-        var landmarksWithVisitHistory = surveyService.getVisitHistory(trajectoryNodes, allBuildings, 100);
+        System.out.println(String.format("\n============LANDMARKS_WITH_TIME_SPEND=============", landmarksWithVisitHistory.size()));
+
+        landmarksWithVisitHistory
+                .forEach(Landmark::calculateTimeSpend);
+
+        landmarksWithVisitHistory.stream()
+                .sorted(Comparator.comparing(Landmark::getTimeSpend).reversed())
+                .limit(10)
+                .forEach(System.out::println);
+
+        var a = 0;
     }
 }

@@ -10,4 +10,8 @@ public class Position {
     private final double distance;
     private final double lon;
     private final double lat;
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
 }
