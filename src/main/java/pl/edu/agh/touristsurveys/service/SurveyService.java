@@ -29,7 +29,7 @@ public class SurveyService {
         List<TrajectoryEdge> trajectoryEdges = nodesToEdges(trajectoryNodes);
 
         List<TrajectoryEdge> userMovingSlowlyEdges = trajectoryEdges.stream()
-                .filter(trajectoryEdge -> trajectoryEdge.getVelocity() < 2)
+                .filter(trajectoryEdge -> trajectoryEdge.getVelocity() < 0.5)
                 .toList();
 
         List<List<TrajectoryEdge>> subsequences = edgesToSubsequences(userMovingSlowlyEdges);
@@ -43,8 +43,10 @@ public class SurveyService {
 
     private Optional<Building> getBestMatchingBuilding(List<TrajectoryNode> nodes, List<Building> buildings) {
         Map<Building, Long> buildingFrequencies = nodes.stream()
+                .map(node -> getNearestBuilding(node, buildings))
+                .flatMap(Optional::stream)
                 .collect(Collectors.groupingBy(
-                        node -> getNearestBuilding(node, buildings).get(),
+                        building -> building,
                         Collectors.counting()
                 ));
         return buildingFrequencies.entrySet()
@@ -55,8 +57,14 @@ public class SurveyService {
 
     private Optional<Building> getNearestBuilding(TrajectoryNode node, List<Building> buildings) {
         return buildings.stream()
+                .filter(building -> checkDistanceBetween(node, building, 100))
                 .min(Comparator.comparing(building ->
                         SurveyUtils.distance(building.lat(), node.getLat(), building.lon(), node.getLon())));
+    }
+
+    private boolean checkDistanceBetween(TrajectoryNode node, Building building, double threshold) {
+        double distance = SurveyUtils.distance(node.getLat(), building.lat(), node.getLon(), building.lon());
+        return distance < threshold;
     }
 
     /**
@@ -85,7 +93,10 @@ public class SurveyService {
                     nodes.add(edge1.getOutgoingTrajectoryNode());
                     return edge2;
                 })
-                .ifPresent(lastEdge -> nodes.add(lastEdge.getIncomingTrajectoryNode()));
+                .ifPresent(lastEdge -> {
+                    nodes.add(lastEdge.getOutgoingTrajectoryNode());
+                    nodes.add(lastEdge.getIncomingTrajectoryNode());
+                });
         return nodes;
     }
 
