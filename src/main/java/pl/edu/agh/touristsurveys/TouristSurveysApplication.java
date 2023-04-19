@@ -6,22 +6,15 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import pl.edu.agh.touristsurveys.model.Building;
-import pl.edu.agh.touristsurveys.model.City;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 import pl.edu.agh.touristsurveys.parser.TrajectoryParser;
 import pl.edu.agh.touristsurveys.service.MapService;
 import pl.edu.agh.touristsurveys.service.SurveyService;
 
 import java.util.List;
-import java.util.Map;
 
 @SpringBootApplication
 public class TouristSurveysApplication implements ApplicationRunner {
-
-    private static final Map<City, Double[]> cityMap = Map.of(
-            City.KRAKOW, new Double[]{49.967, 50.201, 19.734, 20.17},
-            City.PRAGUE, new Double[]{49.945, 50.178, 14.224, 14.708}
-    );
 
     private static final List<String> searchTags = List.of(
             "museum",
@@ -55,7 +48,7 @@ public class TouristSurveysApplication implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         List<TrajectoryNode> trajectoryNodes = trajectoryParser.parseTrajectory();
-        List<Building> allBuildings = mapService.getAllBuildings(cityMap.get(City.PRAGUE), searchTags);
+        List<Building> allBuildings = mapService.getAllBuildings(trajectoryNodes, searchTags);
         List<Building> nearestBuildings = surveyService.filterNearestBuildings(trajectoryNodes, allBuildings, 100);
 
         System.out.println(String.format("============TRAJECTORIES[%s]=============", trajectoryNodes.size()));
