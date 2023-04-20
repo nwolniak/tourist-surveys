@@ -1,8 +1,7 @@
-import { marker } from 'leaflet';
 import './App.css';
 import "leaflet/dist/leaflet.css"
 
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import { Icon, divIcon, point } from 'leaflet';
 import MarkerClousterGroup from 'react-leaflet-markercluster';
 
@@ -20,6 +19,11 @@ function App() {
     {
       geocode: [50.0714, 19.9465],
       name: "Kraków 3"
+    }
+    ,
+    {
+      geocode: [40.0714, 15.9465],
+      name: "Italy"
     }
   ]
 
@@ -58,6 +62,11 @@ return (
           </Marker>
         ))
         }
+
+        {
+          <Polyline pathOptions={{ color: 'red' }} positions={markers.map(marker => marker.geocode)} />
+        }
+
 
       </MarkerClousterGroup>
 
