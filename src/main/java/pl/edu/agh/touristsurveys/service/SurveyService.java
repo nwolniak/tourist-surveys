@@ -1,14 +1,19 @@
 package pl.edu.agh.touristsurveys.service;
 
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.stereotype.Service;
 import pl.edu.agh.touristsurveys.model.Building;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryEdge;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 import pl.edu.agh.touristsurveys.utils.SurveyUtils;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import static java.util.Map.Entry.comparingByValue;
+import static java.util.stream.Collectors.*;
 
 @Service
 public class SurveyService {
@@ -19,10 +24,9 @@ public class SurveyService {
                 .toList();
     }
 
-    private static boolean checkDistanceFromTrajectory(Building building, List<TrajectoryNode> trajectoryNodes, double threshold) {
+    private boolean checkDistanceFromTrajectory(Building building, List<TrajectoryNode> trajectoryNodes, double threshold) {
         return trajectoryNodes.stream()
-                .map(trajectoryNode -> SurveyUtils.distance(trajectoryNode.getLat(), building.lat(), trajectoryNode.getLon(), building.lon()))
-                .anyMatch(distance -> distance < threshold);
+                .anyMatch(node -> checkDistanceBetween(node, building, threshold));
     }
 
     public List<Building> filterVisitedBuildings(List<TrajectoryNode> trajectoryNodes, List<Building> buildings) {
@@ -41,18 +45,65 @@ public class SurveyService {
                 .toList();
     }
 
+    public List<Building> filterSleepingBuildings(List<TrajectoryNode> trajectoryNodes, List<Building> buildings) {
+        SortedMap<LocalDate, List<TrajectoryNode>> nodesPerEachDay = trajectoryNodes.stream()
+                .collect(groupingBy(
+                        node -> node.getTimestamp().toLocalDate(),
+                        TreeMap::new,
+                        Collectors.toList()));
+
+        List<Building> sleepingBuildings = new LinkedList<>();
+
+        nodesPerEachDay.values()
+                .stream()
+                .findFirst()
+                .ifPresent(firstDayNodes -> {
+                    List<TrajectoryNode> morningNodes = getMorningNodes(firstDayNodes);
+                    Optional<Building> morningBuilding = getBestMatchingBuilding(morningNodes, buildings);
+                    morningBuilding.ifPresent(sleepingBuildings::add);
+                });
+
+        nodesPerEachDay.values()
+                .stream()
+                .reduce((nodesPerDay1, nodesPerDay2) -> {
+                    List<TrajectoryNode> nightNodes = ListUtils.sum(getEveningNodes(nodesPerDay1), getMorningNodes(nodesPerDay2));
+                    Optional<Building> nightBuilding = getBestMatchingBuilding(nightNodes, buildings);
+                    nightBuilding.ifPresent(sleepingBuildings::add);
+                    return nodesPerDay2;
+                })
+                .ifPresent(lastDayNodes -> {
+                    List<TrajectoryNode> eveningNodes = getEveningNodes(lastDayNodes);
+                    Optional<Building> eveningBuilding = getBestMatchingBuilding(eveningNodes, buildings);
+                    eveningBuilding.ifPresent(sleepingBuildings::add);
+                });
+
+        return sleepingBuildings;
+    }
+
+    public List<TrajectoryNode> getMorningNodes(List<TrajectoryNode> trajectoryNodes) {
+        return trajectoryNodes.stream()
+                .filter(node -> node.getTimestamp().getHour() < 8)
+                .toList();
+    }
+
+    public List<TrajectoryNode> getEveningNodes(List<TrajectoryNode> trajectoryNodes) {
+        return trajectoryNodes.stream()
+                .filter(node -> node.getTimestamp().getHour() >20)
+                .toList();
+    }
+
     private Optional<Building> getBestMatchingBuilding(List<TrajectoryNode> nodes, List<Building> buildings) {
-        Map<Building, Long> buildingFrequencies = nodes.stream()
+        return nodes.stream()
                 .map(node -> getNearestBuilding(node, buildings))
                 .flatMap(Optional::stream)
-                .collect(Collectors.groupingBy(
-                        building -> building,
-                        Collectors.counting()
-                ));
-        return buildingFrequencies.entrySet()
-                .stream()
-                .max(Entry.comparingByValue())
-                .map(Entry::getKey);
+                .collect(collectingAndThen(groupingBy(
+                                building -> building,
+                                counting()
+                        ),
+                        buildingFrequencies -> buildingFrequencies.entrySet()
+                                .stream()
+                                .max(comparingByValue())
+                                .map(Entry::getKey)));
     }
 
     private Optional<Building> getNearestBuilding(TrajectoryNode node, List<Building> buildings) {
