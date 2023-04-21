@@ -3,7 +3,7 @@ import "leaflet/dist/leaflet.css"
 
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import { Icon, divIcon, point } from 'leaflet';
-import MarkerClousterGroup from 'react-leaflet-markercluster';
+import MarkerClousterGroup from '@changey/react-leaflet-markercluster';
 
 function App() {
 
