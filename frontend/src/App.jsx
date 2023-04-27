@@ -3,12 +3,16 @@ import "leaflet/dist/leaflet.css"
 
 import DataLoader from './DataLoader';
 import Map from './Map';
+import { useState } from "react";
 
 function App() {
 
+const [markerArray, setMarkerArray] = useState([])
+
 const hadleMapData = (data) =>
 {
-  console.log(data)
+  setMarkerArray(data)
+  // console.log(data)
 }
 
 return (
@@ -17,7 +21,7 @@ return (
 
     <DataLoader hadleMapData={hadleMapData}/>
 
-    <Map/>
+    <Map markerArray={markerArray}/>
   </div >
 );
 }

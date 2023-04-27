@@ -41,11 +41,22 @@ function DataLoader(props) {
 
   const prepareMarkerArray = () => {
     const markers = array.map(item => {
-      return {
-        geocode: [item["latitude"], item["longitude"]],
-        timestamp: item["timestamp"]
+      const lattitude = item["latitude"]
+      const longitude = item["longitude"]
+
+      const newLattitude = lattitude ? parseFloat(lattitude.replace(",", ".")) : ""
+      const newLongitude = longitude ? parseFloat(longitude.replace(",", ".")) : ""
+
+      if (item["timestamp"] !== undefined) {
+        return {
+          geocode: [newLattitude, newLongitude],
+          timestamp: item["timestamp"]
+        }
+      } else {
+        return null
       }
-    })
+    }).filter(item => item !== null)
+    console.log(markers)
     props.hadleMapData(markers)
   }
 
@@ -53,7 +64,7 @@ function DataLoader(props) {
     prepareMarkerArray()
   }, [array])
 
-  const headerKeys = Object.keys(Object.assign({}, ...array));
+  // const headerKeys = Object.keys(Object.assign({}, ...array));
 
   return (
     <div style={{ textAlign: "center" }}>
@@ -67,7 +78,7 @@ function DataLoader(props) {
 
         <button onClick={handleOnSubmit}>IMPORT CSV</button>
       </form>
-
+{/* 
       <br />
 
       <table>
@@ -88,7 +99,7 @@ function DataLoader(props) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table> */}
     </div>
   );
 }

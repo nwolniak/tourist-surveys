@@ -3,28 +3,16 @@ import "leaflet/dist/leaflet.css"
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import { Icon, divIcon, point } from 'leaflet';
 import MarkerClousterGroup from '@changey/react-leaflet-markercluster';
+import { useState, useEffect } from "react";
 
-export default function Map() {
+export default function Map(props) {
 
-    const markers = [
-        {
-            geocode: [50.0614, 19.9365],
-            name: "Kraków"
-        },
-        {
-            geocode: [50.0654, 19.9395],
-            name: "Kraków 2"
-        },
-        {
-            geocode: [50.0714, 19.9465],
-            name: "Kraków 3"
-        }
-        ,
-        {
-            geocode: [40.0714, 15.9465],
-            name: "Italy"
-        }
-    ]
+
+    const [markers, setMarkers] = useState(props.markerArray);
+
+    useEffect(() => {
+        setMarkers(props.markerArray);
+    }, [props.markerArray]);
 
     const customIcon = new Icon({
         iconUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
@@ -43,7 +31,7 @@ export default function Map() {
     return (
         <div className="map">
             {/* KRK */}
-            <MapContainer center={[50.0614, 19.9365]} zoom={13} >
+            <MapContainer center={[50.0614, 19.9365]} zoom={8} >
 
                 <TileLayer
                     url="https:/{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -54,15 +42,13 @@ export default function Map() {
                     iconCreateFunction={createCustomClusterIcon}
                 >
                     {markers.map(marker => (
-                        <Marker position={marker.geocode} icon={customIcon} key={marker.geocode}>
-                            <Popup position={marker.geocode}> <h1>{marker.name}</h1></Popup>
+                        <Marker position={marker.geocode} icon={customIcon} key={marker.timestamp}>
+                            <Popup position={marker.geocode}> <h1>{marker.timestamp}</h1></Popup>
                         </Marker>
                     ))
                     }
 
-                    {
-                        <Polyline pathOptions={{ color: 'red' }} positions={markers.map(marker => marker.geocode)} />
-                    }
+                    <Polyline pathOptions={{ color: 'red' }} positions={markers.map(marker => marker.geocode)} />
 
 
                 </MarkerClousterGroup>
