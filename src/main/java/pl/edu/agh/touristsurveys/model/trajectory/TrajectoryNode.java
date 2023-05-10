@@ -1,26 +1,29 @@
 package pl.edu.agh.touristsurveys.model.trajectory;
 
-import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvCustomBindByName;
-import lombok.Data;
-import pl.edu.agh.touristsurveys.mapping.DoubleConverter;
-import pl.edu.agh.touristsurveys.mapping.TimestampConverter;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 public class TrajectoryNode {
 
-    @CsvBindByName(column = "trajectory id")
-    private String trajectoryId;
+    private final String nodeId;
+    private final String trajectoryId;
+    private final double lon;
+    private final double lat;
+    private final LocalDateTime timestamp;
 
-    @CsvCustomBindByName(column = "longitude", converter = DoubleConverter.class)
-    private double lon;
+    private TrajectoryEdge incomingTrajectoryEdge;
+    private TrajectoryEdge outgoingTrajectoryEdge;
 
-    @CsvCustomBindByName(column = "latitude", converter = DoubleConverter.class)
-    private double lat;
-
-    @CsvCustomBindByName(column = "timestamp", converter = TimestampConverter.class)
-    private LocalDateTime timestamp;
+    public TrajectoryNode(String trajectoryId, double lon, double lat, LocalDateTime timestamp) {
+        this.nodeId = trajectoryId + timestamp.toString();
+        this.trajectoryId = trajectoryId;
+        this.lon = lon;
+        this.lat = lat;
+        this.timestamp = timestamp;
+    }
 
 }

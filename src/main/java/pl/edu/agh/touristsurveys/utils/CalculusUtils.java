@@ -3,9 +3,9 @@ package pl.edu.agh.touristsurveys.utils;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class SurveyUtils {
+public class CalculusUtils {
 
-    private SurveyUtils() {}
+    private CalculusUtils() {}
 
     public static double timeDifferenceInMilliseconds(LocalDateTime time1, LocalDateTime time2) {
         return ChronoUnit.MILLIS.between(time1, time2);
