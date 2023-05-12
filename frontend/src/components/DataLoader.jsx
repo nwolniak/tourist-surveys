@@ -1,12 +1,25 @@
 import { marker } from "leaflet";
 import React, { useEffect, useState } from "react";
+import Bar from "./Bar";
+// import uploadImg from "../public/upload.png/";
 
 function DataLoader(props) {
+  const [show, setShow] = useState(true);
   const [file, setFile] = useState();
   const [array, setArray] = useState([]);
 
   const handleOnChange = (e) => {
     setFile(e.target.files[0]);
+
+    if (e.target.files[0]) {
+      const fileReader = new FileReader();
+      fileReader.onload = function (event) {
+        const text = event.target.result;
+        csvFileToArray(text);
+      };
+
+      fileReader.readAsText(e.target.files[0]);
+    }
   };
 
   const csvFileToArray = (string) => {
@@ -23,20 +36,6 @@ function DataLoader(props) {
     });
 
     setArray(array);
-  };
-
-  const handleOnSubmit = (e) => {
-    e.preventDefault();
-
-    if (file) {
-      const fileReader = new FileReader();
-      fileReader.onload = function (event) {
-        const text = event.target.result;
-        csvFileToArray(text);
-      };
-
-      fileReader.readAsText(file);
-    }
   };
 
   const prepareMarkerArray = () => {
@@ -64,43 +63,25 @@ function DataLoader(props) {
     prepareMarkerArray()
   }, [array])
 
-  // const headerKeys = Object.keys(Object.assign({}, ...array));
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <form>
-        <input
-          type="file"
-          id="csvFileInput"
-          accept=".csv"
-          onChange={handleOnChange}
-        />
-
-        <button onClick={handleOnSubmit}>IMPORT CSV</button>
-      </form>
-{/* 
-      <br />
-
-      <table>
-        <thead>
-          <tr key="header">
-            {headerKeys.map((key) => (
-              <th key={key}>{key}</th>
-            ))}
-          </tr>
-        </thead>
-
-        <tbody>
-          {array.map((item, index) => (
-            <tr key={index}>
-              {Object.values(item).map((val, index) => (
-                <td key={index}>{val}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table> */}
-    </div>
+    <>
+      <Bar name="Data loader" setShow={setShow} />
+      {
+        show ?
+          <div className="dataLoader">
+            <div className="app">
+              <div className="parent">
+                <div className="file-upload">
+                  <img src="./upload.png" alt="upload" />
+                  <h3>Click box to upload</h3>
+                  <input type="file" onChange={handleOnChange} />
+                </div>
+              </div>
+            </div>
+          </div> : null
+      }
+    </>
   );
 }
 
