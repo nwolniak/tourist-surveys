@@ -57,7 +57,7 @@ function DataLoader(props) {
       }
     }).filter(item => item !== null)
     console.log(markers)
-    props.hadleMapData(markers)
+    props.handleMapData(markers)
   }
 
   useEffect(() => {
