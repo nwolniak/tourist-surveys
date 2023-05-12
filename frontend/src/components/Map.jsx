@@ -4,10 +4,11 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import { Icon, divIcon, point } from 'leaflet';
 import MarkerClousterGroup from '@changey/react-leaflet-markercluster';
 import { useState, useEffect } from "react";
+import Bar from './Bar';
 
 export default function Map(props) {
 
-
+    const [show, setShow] = useState(true);
     const [markers, setMarkers] = useState(props.markerArray);
 
     useEffect(() => {
@@ -29,31 +30,37 @@ export default function Map(props) {
 
 
     return (
-        <div className="map">
-            {/* KRK */}
-            <MapContainer center={[50.0614, 19.9365]} zoom={8} >
+        <>
+            <Bar name="Map" setShow={setShow} />
+            {
+                show ? <div className="map">
+                    {/* KRK */}
+                    <MapContainer center={[50.0614, 19.9365]} zoom={8} >
 
-                <TileLayer
-                    url="https:/{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
+                        <TileLayer
+                            url="https:/{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
 
-                <MarkerClousterGroup
-                    chunkedLoading={true}
-                    iconCreateFunction={createCustomClusterIcon}
-                >
-                    {markers.map(marker => (
-                        <Marker position={marker.geocode} icon={customIcon} key={marker.timestamp}>
-                            <Popup position={marker.geocode}> <h1>{marker.timestamp}</h1></Popup>
-                        </Marker>
-                    ))
-                    }
+                        <MarkerClousterGroup
+                            chunkedLoading={true}
+                            iconCreateFunction={createCustomClusterIcon}
+                        >
+                            {markers.map(marker => (
+                                <Marker position={marker.geocode} icon={customIcon} key={marker.timestamp}>
+                                    <Popup position={marker.geocode}> <h1>{marker.timestamp}</h1></Popup>
+                                </Marker>
+                            ))
+                            }
 
-                    <Polyline pathOptions={{ color: 'red' }} positions={markers.map(marker => marker.geocode)} />
+                            <Polyline pathOptions={{ color: 'red' }} positions={markers.map(marker => marker.geocode)} />
 
 
-                </MarkerClousterGroup>
+                        </MarkerClousterGroup>
 
-            </MapContainer>
-        </div>
+                    </MapContainer>
+                </div> : null
+            }
+
+        </>
     );
 }
