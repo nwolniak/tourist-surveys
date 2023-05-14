@@ -131,3 +131,29 @@
   width: 12vh;
   margin-bottom: 10px;
 }
+
+.survey table{
+  width: 70%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-family: Tahoma, Geneva, sans-serif;
+}
+
+.survey table td {
+	padding: 15px;
+}
+
+.survey table tbody td {
+	color: #636363;
+	border: 1px solid #dddfe1;
+}
+
+.survey table tbody tr {
+	background-color: #f9fafb;
+}
+
+.survey table tbody tr:nth-child(odd) {
+	background-color: #ffffff;
+}

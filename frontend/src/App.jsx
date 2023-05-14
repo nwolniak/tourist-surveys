@@ -6,6 +6,7 @@ import Map from './components/Map';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { useState } from "react";
+import Survey from './components/Survey';
 
 function App() {
 
@@ -24,6 +25,8 @@ return (
     <DataLoader handleMapData={handleMapData}/>
 
     <Map markerArray={markerArray}/>
+
+    <Survey markerArray={markerArray}/>
 
     <Footer />
   </div >
