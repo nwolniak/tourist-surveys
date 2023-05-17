@@ -1,5 +1,9 @@
 package pl.edu.agh.touristsurveys.utils;
 
+import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
+import pl.edu.agh.touristsurveys.model.Building;
+import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -29,6 +33,10 @@ public class CalculusUtils {
         distance = Math.pow(distance, 2);
 
         return Math.sqrt(distance);
+    }
+
+    public static double distance(TrajectoryNode node, Building building) {
+        return distance(node.getLat(), building.lat(), node.getLon(), building.lon());
     }
 
 }

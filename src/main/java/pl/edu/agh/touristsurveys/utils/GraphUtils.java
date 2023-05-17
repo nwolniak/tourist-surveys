@@ -1,11 +1,10 @@
 package pl.edu.agh.touristsurveys.utils;
 
+import pl.edu.agh.touristsurveys.model.Building;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryEdge;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class GraphUtils {
 
@@ -65,5 +64,12 @@ public class GraphUtils {
         return subsequences;
     }
 
+    public static int buildingPositionOnTrajectory(Map<String, TrajectoryNode> trajectoryNodes, Building building) {
+        return trajectoryNodes.values().stream()
+                .min(Comparator.comparingDouble(node -> CalculusUtils.distance(node, building)))
+                .map(TrajectoryNode::getNodeId)
+                .map(nodeId -> trajectoryNodes.keySet().stream().toList().indexOf(nodeId))
+                .orElse(-1);
+    }
 
 }

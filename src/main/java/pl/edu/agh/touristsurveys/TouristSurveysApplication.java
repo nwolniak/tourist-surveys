@@ -31,7 +31,8 @@ public class TouristSurveysApplication implements ApplicationRunner {
             "amenity=food_court",
             "amenity=ice_cream",
             "amenity=pub",
-            "amenity=restaurant"
+            "amenity=restaurant",
+            "public_transport"
     );
 
     @Autowired
@@ -69,16 +70,23 @@ public class TouristSurveysApplication implements ApplicationRunner {
                 .limit(10)
                 .forEach(System.out::println);
 
-        List<Building> visitedBuildings = surveyService.filterVisitedBuildings(trajectoryGraph, nearestBuildings);
+        List<Building> visitedBuildings = surveyService.filterVisitedBuildings(trajectoryGraph, nearestBuildings, 50);
         System.out.println(String.format("============VISITED_BUILDINGS[%s]=============", visitedBuildings.size()));
         visitedBuildings.stream()
                 .limit(10)
                 .forEach(System.out::println);
 
-        List<Building> sleepingBuildings = surveyService.filterSleepingBuildings(trajectoryGraph, nearestBuildings);
+        List<Building> sleepingBuildings = surveyService.filterSleepingBuildings(trajectoryGraph, nearestBuildings, 50);
         System.out.println(String.format("============SLEEPING_BUILDINGS[%s]=============", sleepingBuildings.size()));
         sleepingBuildings.stream()
                 .limit(10)
+                .forEach(System.out::println);
+
+        List<List<Building>> meansOfTransport = surveyService.getMeansOfTransport(trajectoryGraph, nearestBuildings, 10);
+        System.out.println(String.format("============MEANS_OF_TRANSPORT[%s]=============", meansOfTransport.size()));
+        meansOfTransport.stream()
+                .flatMap(List::stream)
+                .limit(50)
                 .forEach(System.out::println);
     }
 }
