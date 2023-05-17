@@ -6,12 +6,14 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import pl.edu.agh.touristsurveys.model.Building;
+import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryGraph;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 import pl.edu.agh.touristsurveys.parser.TrajectoryParser;
 import pl.edu.agh.touristsurveys.service.MapService;
 import pl.edu.agh.touristsurveys.service.SurveyService;
 
 import java.util.List;
+import java.util.Map;
 
 @SpringBootApplication
 public class TouristSurveysApplication implements ApplicationRunner {
@@ -47,32 +49,33 @@ public class TouristSurveysApplication implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        List<TrajectoryNode> trajectoryNodes = trajectoryParser.parseTrajectory();
-        List<Building> allBuildings = mapService.getAllBuildings(trajectoryNodes, searchTags);
-        List<Building> nearestBuildings = surveyService.filterNearestBuildings(trajectoryNodes, allBuildings, 100);
+        TrajectoryGraph trajectoryGraph = trajectoryParser.parseAndMapToInternalModel();
+        Map<String, TrajectoryNode> trajectoryNodes = trajectoryGraph.trajectoryNodes();
 
         System.out.println(String.format("============TRAJECTORIES[%s]=============", trajectoryNodes.size()));
-        trajectoryNodes.stream()
+        trajectoryNodes.values().stream()
                 .limit(10)
                 .forEach(System.out::println);
 
+        List<Building> allBuildings = mapService.getAllBuildings(trajectoryNodes, searchTags);
         System.out.println(String.format("============ALL_BUILDINGS[%s]=============", allBuildings.size()));
         allBuildings.stream()
                 .limit(10)
                 .forEach(System.out::println);
 
+        List<Building> nearestBuildings = surveyService.filterNearestBuildings(trajectoryNodes, allBuildings, 100);
         System.out.println(String.format("============NEAREST_BUILDINGS[%s]=============", nearestBuildings.size()));
         nearestBuildings.stream()
                 .limit(10)
                 .forEach(System.out::println);
 
-        List<Building> visitedBuildings = surveyService.filterVisitedBuildings(trajectoryNodes, nearestBuildings);
+        List<Building> visitedBuildings = surveyService.filterVisitedBuildings(trajectoryGraph, nearestBuildings);
         System.out.println(String.format("============VISITED_BUILDINGS[%s]=============", visitedBuildings.size()));
         visitedBuildings.stream()
                 .limit(10)
                 .forEach(System.out::println);
 
-        List<Building> sleepingBuildings = surveyService.filterSleepingBuildings(trajectoryNodes, nearestBuildings);
+        List<Building> sleepingBuildings = surveyService.filterSleepingBuildings(trajectoryGraph, nearestBuildings);
         System.out.println(String.format("============SLEEPING_BUILDINGS[%s]=============", sleepingBuildings.size()));
         sleepingBuildings.stream()
                 .limit(10)
