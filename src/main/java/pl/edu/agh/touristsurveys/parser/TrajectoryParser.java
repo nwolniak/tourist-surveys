@@ -50,7 +50,7 @@ public class TrajectoryParser {
                         .collect(groupingBy(
                                 node -> node.getTimestamp().toLocalDate(),
                                 TreeMap::new,
-                                Collectors.toList())))
+                                Collectors.toMap(TrajectoryNode::getNodeId, Function.identity()))))
                 .build();
     }
 
