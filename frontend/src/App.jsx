@@ -11,6 +11,7 @@ import Survey from './components/Survey';
 function App() {
 
 const [markerArray, setMarkerArray] = useState([])
+const [SurveyData, setSurveyData] = useState([])
 
 const handleMapData = (data) =>
 {
@@ -22,11 +23,11 @@ return (
   <div className="App">
     
     <Header />
-    <DataLoader handleMapData={handleMapData}/>
+    <DataLoader handleMapData={handleMapData} setSurveyData={setSurveyData}/>
 
     <Map markerArray={markerArray}/>
 
-    <Survey markerArray={markerArray}/>
+    <Survey markerArray={markerArray} SurveyData={SurveyData}/>
 
     <Footer />
   </div >

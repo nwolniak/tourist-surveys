@@ -16,11 +16,36 @@ function DataLoader(props) {
       fileReader.onload = function (event) {
         const text = event.target.result;
         csvFileToArray(text);
+        sendCSVtoServer(text)
       };
-
+      
       fileReader.readAsText(e.target.files[0]);
     }
   };
+
+  const sendCSVtoServer = async (csv) => {
+
+    const requestData = {
+      file: csv,
+    };
+    
+
+    try {
+      const response = await fetch("http://localhost:8080/surveyResults", {
+        method: "POST",
+        mode: "cors",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+      const jsonData = await response.json();
+      props.setSurveyData(jsonData);
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
 
   const csvFileToArray = (string) => {
     const csvHeader = string.slice(0, string.indexOf("\n")).split(";");

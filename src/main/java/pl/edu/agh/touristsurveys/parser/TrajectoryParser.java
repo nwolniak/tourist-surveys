@@ -4,7 +4,9 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,4 +29,15 @@ public class TrajectoryParser {
         }
     }
 
+    public static List<TrajectoryNode> parseTrajectory(byte[] byteArray) {
+        try (Reader reader = new InputStreamReader(new ByteArrayInputStream(byteArray))) {
+            return new CsvToBeanBuilder<TrajectoryNode>(reader)
+                    .withType(TrajectoryNode.class)
+                    .withSeparator(';')
+                    .build()
+                    .parse();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

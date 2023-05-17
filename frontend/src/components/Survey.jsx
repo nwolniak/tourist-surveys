@@ -1,30 +1,16 @@
 import React from 'react'
 import { useState } from "react";
 import Bar from './Bar';
+import { useEffect } from 'react';
 
-const Survey = () => {
+const Survey = (props) => {
 
     const [show, setShow] = useState(true)
     const [survey, setSurvey] = useState([])
 
-    const handleOnClick = async () => {
-        try {
-            const response = await fetch("http://localhost:8080/getSurveyResults", {
-                method: "GET",
-                mode: "cors",
-                credentials: "same-origin",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            const jsonData = await response.json();
-            console.log(jsonData);
-            setSurvey(jsonData);
-        } catch (err) {
-            console.error(err.message);
-        }
-
-    }
+    useEffect(() => {
+        setSurvey(props.SurveyData);
+    }, [props.SurveyData])
 
     return (
         <>
@@ -33,8 +19,6 @@ const Survey = () => {
             {
                 show ? <div className="survey">
                     <div>Survey</div>
-                    {/* temporary solution */}
-                    <button onClick={() => handleOnClick()}>Get data</button>
                     <table>
                         <thead>
                             <tr>
