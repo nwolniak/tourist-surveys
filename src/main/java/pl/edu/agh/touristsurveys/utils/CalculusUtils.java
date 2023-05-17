@@ -1,11 +1,15 @@
 package pl.edu.agh.touristsurveys.utils;
 
+import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
+import pl.edu.agh.touristsurveys.model.Building;
+import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class SurveyUtils {
+public class CalculusUtils {
 
-    private SurveyUtils() {}
+    private CalculusUtils() {}
 
     public static double timeDifferenceInMilliseconds(LocalDateTime time1, LocalDateTime time2) {
         return ChronoUnit.MILLIS.between(time1, time2);
@@ -29,6 +33,10 @@ public class SurveyUtils {
         distance = Math.pow(distance, 2);
 
         return Math.sqrt(distance);
+    }
+
+    public static double distance(TrajectoryNode node, Building building) {
+        return distance(node.getLat(), building.lat(), node.getLon(), building.lon());
     }
 
 }
