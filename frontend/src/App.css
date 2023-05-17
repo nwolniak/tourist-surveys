@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .App-logo {
@@ -32,16 +34,19 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
-.leaflet-container{
+.leaflet-container {
   height: 80vh;
+  width: 80%;
+  margin: 0 auto;
 }
 
-.cluster-icon{
+.cluster-icon {
   background-color: #ff0000;
   border-radius: 50%;
   width: 30px;
@@ -50,4 +55,105 @@
   justify-content: center;
   align-items: center;
   color: #fff;
+}
+
+.header {
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 10vh;
+  margin: 0 auto;
+  background-color: antiquewhite;
+}
+
+.footer {
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 5vh;
+  margin: 0 auto;
+  background-color: antiquewhite;
+  margin-top: 20px;
+}
+
+.bar {
+  width: 75%;
+  padding: 10px;
+  margin: 0 auto;
+  background-color: lightseagreen;
+  border-radius: 50px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-style: italic;
+  font-weight: bold;
+  color: #fff;
+}
+
+.dataLoader {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dataLoader>input {}
+
+.file-upload {
+  text-align: center;
+  border: 3px dashed rgb(210, 227, 244);
+  padding: 1rem;
+  position: relative;
+  cursor: pointer;
+}
+
+.file-upload p {
+  font-size: 0.87rem;
+  margin-top: 10px;
+  color: #bbcada;
+}
+
+.file-upload input {
+  display: block;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-upload img {
+  width: 12vh;
+  margin-bottom: 10px;
+}
+
+.survey table{
+  width: 70%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-family: Tahoma, Geneva, sans-serif;
+}
+
+.survey table td {
+	padding: 15px;
+}
+
+.survey table tbody td {
+	color: #636363;
+	border: 1px solid #dddfe1;
+}
+
+.survey table tbody tr {
+	background-color: #f9fafb;
+}
+
+.survey table tbody tr:nth-child(odd) {
+	background-color: #ffffff;
 }
