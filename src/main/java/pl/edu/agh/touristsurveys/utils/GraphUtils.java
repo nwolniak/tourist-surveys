@@ -65,11 +65,16 @@ public class GraphUtils {
     }
 
     public static int buildingPositionOnTrajectory(Map<String, TrajectoryNode> trajectoryNodes, Building building) {
+        return Optional.ofNullable(buildingCorrespondingTrajectoryNodeIdOnTrajectory(trajectoryNodes, building))
+                .map(nodeId -> trajectoryNodes.keySet().stream().toList().indexOf(nodeId))
+                .orElse(-1);
+    }
+
+    public static String buildingCorrespondingTrajectoryNodeIdOnTrajectory(Map<String, TrajectoryNode> trajectoryNodes, Building building) {
         return trajectoryNodes.values().stream()
                 .min(Comparator.comparingDouble(node -> CalculusUtils.distance(node, building)))
                 .map(TrajectoryNode::getNodeId)
-                .map(nodeId -> trajectoryNodes.keySet().stream().toList().indexOf(nodeId))
-                .orElse(-1);
+                .orElse(null);
     }
 
 }

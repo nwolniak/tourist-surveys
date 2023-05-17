@@ -82,11 +82,17 @@ public class TouristSurveysApplication implements ApplicationRunner {
                 .limit(10)
                 .forEach(System.out::println);
 
-        List<List<Building>> meansOfTransport = surveyService.getMeansOfTransport(trajectoryGraph, nearestBuildings, 10);
+        Map<String, Long> meansOfTransport = surveyService.getMeansOfTransport(trajectoryGraph, nearestBuildings, 10);
         System.out.println(String.format("============MEANS_OF_TRANSPORT[%s]=============", meansOfTransport.size()));
-        meansOfTransport.stream()
-                .flatMap(List::stream)
-                .limit(50)
-                .forEach(System.out::println);
+        meansOfTransport.
+                forEach((k, v) -> System.out.println(k + " -> " + v));
+
+        String arrivalMeanOfTransport = surveyService.getArrivalMeanOfTransport(trajectoryGraph, nearestBuildings, 10);
+        System.out.println("============ARRIVAL_MEAN_OF_TRANSPORT=============");
+        System.out.println(arrivalMeanOfTransport);
+
+        String departureMeanOfTransport = surveyService.getDepartureMeanOfTransport(trajectoryGraph, nearestBuildings, 10);
+        System.out.println("============DEPARTURE_MEAN_OF_TRANSPORT=============");
+        System.out.println(departureMeanOfTransport);
     }
 }

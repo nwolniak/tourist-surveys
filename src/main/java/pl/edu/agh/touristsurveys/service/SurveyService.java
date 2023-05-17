@@ -11,8 +11,10 @@ import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 import pl.edu.agh.touristsurveys.utils.CalculusUtils;
 import pl.edu.agh.touristsurveys.utils.GraphUtils;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import static java.util.Map.Entry.comparingByValue;
 import static java.util.stream.Collectors.*;
@@ -76,14 +78,14 @@ public class SurveyService {
         return sleepingBuildings;
     }
 
-    private List<TrajectoryNode> getMorningNodes(List<TrajectoryNode> trajectoryNodes) {
-        return trajectoryNodes.stream()
+    private List<TrajectoryNode> getMorningNodes(Map<String, TrajectoryNode> trajectoryNodes) {
+        return trajectoryNodes.values().stream()
                 .filter(node -> node.getTimestamp().getHour() < 8)
                 .toList();
     }
 
-    private List<TrajectoryNode> getEveningNodes(List<TrajectoryNode> trajectoryNodes) {
-        return trajectoryNodes.stream()
+    private List<TrajectoryNode> getEveningNodes(Map<String, TrajectoryNode> trajectoryNodes) {
+        return trajectoryNodes.values().stream()
                 .filter(node -> node.getTimestamp().getHour() > 20)
                 .toList();
     }
@@ -114,22 +116,65 @@ public class SurveyService {
         return distance < threshold;
     }
 
-    public List<List<Building>> getMeansOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+    private List<Building> getMeansOfTransportSorted(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
         List<Building> publicTransportNodes = buildings.stream()
                 .filter(building -> building.type().equals("node"))
                 .filter(building -> building.tags().containsKey("public_transport"))
                 .toList();
 
-        List<Building> publicTransportNodesSorted = publicTransportNodes.stream()
+        return publicTransportNodes.stream()
                 .filter(publicTransportNode -> checkDistanceFromTrajectory(publicTransportNode, trajectoryGraph.trajectoryNodes(), threshold))
                 .sorted(Comparator.comparingInt(node -> GraphUtils.buildingPositionOnTrajectory(trajectoryGraph.trajectoryNodes(), node)))
                 .toList();
+    }
+
+    public String getArrivalMeanOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+        return getMeansOfTransportSorted(trajectoryGraph, buildings, threshold)
+                .stream()
+                .findFirst()
+                .filter(building -> {
+                    String nodeId = GraphUtils.buildingCorrespondingTrajectoryNodeIdOnTrajectory(trajectoryGraph.trajectoryNodes(), building);
+                    return trajectoryGraph.nodesPerEachDay()
+                            .values()
+                            .stream()
+                            .findFirst()
+                            .filter(firstDayNodes -> firstDayNodes.containsKey(nodeId))
+                            .isPresent();
+                })
+                .flatMap(this::getBuildingPublicTransportType)
+                .orElse(null);
+    }
+
+    public String getDepartureMeanOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+        List<Building> publicTransportNodesSorted = getMeansOfTransportSorted(trajectoryGraph, buildings, threshold);
+        return publicTransportNodesSorted
+                .stream()
+                .skip(publicTransportNodesSorted.size() - 1)
+                .findFirst()
+                .filter(building -> {
+                    String nodeId = GraphUtils.buildingCorrespondingTrajectoryNodeIdOnTrajectory(trajectoryGraph.trajectoryNodes(), building);
+                    SortedMap<LocalDate, Map<String, TrajectoryNode>> nodesPerEachDay = trajectoryGraph.nodesPerEachDay();
+                    return nodesPerEachDay
+                            .values()
+                            .stream()
+                            .skip(nodesPerEachDay.size() - 1)
+                            .findFirst()
+                            .filter(lastDayNodes -> lastDayNodes.containsKey(nodeId))
+                            .isPresent();
+                })
+                .flatMap(this::getBuildingPublicTransportType)
+                .orElse(null);
+    }
+
+    public Map<String, Long> getMeansOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+        List<Building> publicTransportNodesSorted = getMeansOfTransportSorted(trajectoryGraph, buildings, threshold);
 
         List<List<Building>> subsequences = new LinkedList<>();
         ListIterator<Building> it = publicTransportNodesSorted.listIterator();
         boolean firstItem = true;
+        LinkedList<Building> subsequence;
         while (it.hasNext()) {
-            LinkedList<Building> subsequence = new LinkedList<>();
+            subsequence = new LinkedList<>();
             Building currentPublicTransport = it.next();
             while (it.hasNext()) {
                 Building nextPublicTransport = it.next();
@@ -140,15 +185,8 @@ public class SurveyService {
                 } else {
                     lastPublicTransport = subsequence.getLast();
                 }
-                Optional<String> lastPublicTransportType = lastPublicTransport.tags().entrySet().stream()
-                        .filter(entry -> StringUtils.equalsAny(entry.getKey(), "bus", "tram", "railway"))
-                        .map(Entry::getKey)
-                        .findFirst();
-
-                Optional<String> nextPublicTransportType = nextPublicTransport.tags().entrySet().stream()
-                        .filter(entry -> StringUtils.equalsAny(entry.getKey(), "bus", "tram", "railway"))
-                        .map(Entry::getKey)
-                        .findFirst();
+                Optional<String> lastPublicTransportType = getBuildingPublicTransportType(lastPublicTransport);
+                Optional<String> nextPublicTransportType = getBuildingPublicTransportType(nextPublicTransport);
 
                 if (lastPublicTransportType.isEmpty()
                         || nextPublicTransportType.isEmpty()
@@ -163,9 +201,24 @@ public class SurveyService {
                 subsequence.add(nextPublicTransport);
                 firstItem = false;
             }
-            subsequences.add(subsequence);
+            if (!subsequence.isEmpty()) {
+                subsequences.add(subsequence);
+            }
         }
-        return subsequences;
+        return subsequences.stream()
+                .collect(Collectors.groupingBy(
+                        subseq -> subseq.stream().findFirst()
+                                .flatMap(this::getBuildingPublicTransportType)
+                                .orElseThrow(),
+                        Collectors.counting()));
+    }
+
+    private Optional<String> getBuildingPublicTransportType(Building building) {
+        return building.tags()
+                .entrySet().stream()
+                .filter(entry -> StringUtils.equalsAny(entry.getKey(), "bus", "tram", "railway"))
+                .map(Entry::getKey)
+                .findFirst();
     }
 
 }
