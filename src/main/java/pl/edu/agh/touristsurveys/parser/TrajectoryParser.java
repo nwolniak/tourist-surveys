@@ -12,8 +12,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -23,20 +21,6 @@ import static java.util.stream.Collectors.groupingBy;
 
 @RequiredArgsConstructor
 public class TrajectoryParser {
-
-    private final String trajectoryPath;
-
-    public List<CsvNode> parseTrajectory() {
-        try (Reader reader = Files.newBufferedReader(Path.of(trajectoryPath))) {
-            return new CsvToBeanBuilder<CsvNode>(reader)
-                    .withType(CsvNode.class)
-                    .withSeparator(';')
-                    .build()
-                    .parse();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static List<CsvNode> parseTrajectory(byte[] byteArray) {
         try (Reader reader = new InputStreamReader(new ByteArrayInputStream(byteArray))) {
@@ -50,8 +34,8 @@ public class TrajectoryParser {
         }
     }
 
-    public TrajectoryGraph parseAndMapToInternalModel() {
-        List<TrajectoryNode> nodes = parseTrajectory().stream()
+    public static TrajectoryGraph parseAndMapToInternalModel(byte[] byteArray) {
+        List<TrajectoryNode> nodes = parseTrajectory(byteArray).stream()
                 .map(csvNode -> new TrajectoryNode(csvNode.getTrajectoryId(), csvNode.getLon(), csvNode.getLat(), csvNode.getTimestamp()))
                 .toList();
 
@@ -66,24 +50,6 @@ public class TrajectoryParser {
                                 TreeMap::new,
                                 Collectors.toMap(TrajectoryNode::getNodeId, Function.identity()))))
                 .build();
-    }
-  
-    public TrajectoryGraph parseAndMapToInternalModel(byte[] byteArray) {
-          List<TrajectoryNode> nodes = parseTrajectory(byteArray).stream()
-                  .map(csvNode -> new TrajectoryNode(csvNode.getTrajectoryId(), csvNode.getLon(), csvNode.getLat(), csvNode.getTimestamp()))
-                  .toList();
-
-          return TrajectoryGraph.builder()
-                  .trajectoryNodes(nodes.stream()
-                          .collect(Collectors.toMap(TrajectoryNode::getNodeId, Function.identity())))
-                  .trajectoryEdges(GraphUtils.nodesToEdges(nodes).stream()
-                          .collect(Collectors.toMap(TrajectoryEdge::getEdgeId, Function.identity())))
-                  .nodesPerEachDay(nodes.stream()
-                          .collect(groupingBy(
-                                  node -> node.getTimestamp().toLocalDate(),
-                                  TreeMap::new,
-                                  Collectors.toMap(TrajectoryNode::getNodeId, Function.identity()))))
-                  .build();
     }
 
 }

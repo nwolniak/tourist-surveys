@@ -1,224 +1,56 @@
 package pl.edu.agh.touristsurveys.service;
 
-import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.edu.agh.touristsurveys.model.Building;
-import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryEdge;
+import pl.edu.agh.touristsurveys.model.SurveyDTO;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryGraph;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
-import pl.edu.agh.touristsurveys.utils.CalculusUtils;
-import pl.edu.agh.touristsurveys.utils.GraphUtils;
 
-import java.time.LocalDate;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import static java.util.Map.Entry.comparingByValue;
-import static java.util.stream.Collectors.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class SurveyService {
 
-    public List<Building> filterNearestBuildings(Map<String, TrajectoryNode> nodes, List<Building> allBuildings, double dist) {
-        return allBuildings.stream()
-                .filter(building -> checkDistanceFromTrajectory(building, nodes, dist))
-                .toList();
-    }
+    private static final List<String> searchTags = List.of(
+            "museum",
+            "tourism=hotel",
+            "tourism=hostel",
+            "tourism=motel",
+            "tourism=guest_house",
+            "public_transport=station",
+            "amenity=bar",
+            "amenity=biergarten",
+            "amenity=fast_food",
+            "amenity=food_court",
+            "amenity=ice_cream",
+            "amenity=pub",
+            "amenity=restaurant",
+            "public_transport"
+    );
 
-    private boolean checkDistanceFromTrajectory(Building building, Map<String, TrajectoryNode> nodes, double threshold) {
-        return nodes.values().stream()
-                .anyMatch(node -> checkDistanceBetween(node, building, threshold));
-    }
+    private final BuildingsService buildingsService;
+    private final MapService mapService;
 
-    public List<Building> filterVisitedBuildings(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
-        List<TrajectoryEdge> userMovingSlowlyEdges = trajectoryGraph.trajectoryEdges()
-                .values()
-                .stream()
-                .filter(trajectoryEdge -> trajectoryEdge.getVelocity() < 0.5)
-                .toList();
+    public List<SurveyDTO> createTouristSurvey(TrajectoryGraph trajectoryGraph) {
+        Map<String, TrajectoryNode> nodes = trajectoryGraph.trajectoryNodes();
+        List<Building> allBuildings = mapService.getAllBuildings(nodes, searchTags);
+        List<Building> nearestBuildings = buildingsService.filterNearestBuildings(nodes, allBuildings, 100);
+        List<Building> visitedBuildings = buildingsService.filterVisitedBuildings(trajectoryGraph, nearestBuildings, 50);
+        List<Building> sleepingBuildings = buildingsService.filterSleepingBuildings(trajectoryGraph, nearestBuildings, 50);
+        Map<String, Long> meansOfTransport = buildingsService.getMeansOfTransport(trajectoryGraph, nearestBuildings, 10);
+        String arrivalMeanOfTransport = buildingsService.getArrivalMeanOfTransport(trajectoryGraph, nearestBuildings, 10);
+        String departureMeanOfTransport = buildingsService.getDepartureMeanOfTransport(trajectoryGraph, nearestBuildings, 10);
 
-        List<List<TrajectoryEdge>> subsequences = GraphUtils.edgesToSubsequences(userMovingSlowlyEdges);
-
-        return subsequences.stream()
-                .map(GraphUtils::edgesToNodes)
-                .map(subsequenceNodes -> getBestMatchingBuilding(subsequenceNodes, buildings, threshold))
-                .flatMap(Optional::stream)
-                .toList();
-    }
-
-    public List<Building> filterSleepingBuildings(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
-        List<Building> sleepingBuildings = new LinkedList<>();
-
-        trajectoryGraph.nodesPerEachDay().values()
-                .stream()
-                .findFirst()
-                .ifPresent(firstDayNodes -> {
-                    List<TrajectoryNode> morningNodes = getMorningNodes(firstDayNodes);
-                    Optional<Building> morningBuilding = getBestMatchingBuilding(morningNodes, buildings, threshold);
-                    morningBuilding.ifPresent(sleepingBuildings::add);
-                });
-
-        trajectoryGraph.nodesPerEachDay().values()
-                .stream()
-                .reduce((nodesPerDay1, nodesPerDay2) -> {
-                    List<TrajectoryNode> nightNodes = ListUtils.sum(getEveningNodes(nodesPerDay1), getMorningNodes(nodesPerDay2));
-                    Optional<Building> nightBuilding = getBestMatchingBuilding(nightNodes, buildings, threshold);
-                    nightBuilding.ifPresent(sleepingBuildings::add);
-                    return nodesPerDay2;
-                })
-                .ifPresent(lastDayNodes -> {
-                    List<TrajectoryNode> eveningNodes = getEveningNodes(lastDayNodes);
-                    Optional<Building> eveningBuilding = getBestMatchingBuilding(eveningNodes, buildings, threshold);
-                    eveningBuilding.ifPresent(sleepingBuildings::add);
-                });
-
-        return sleepingBuildings;
-    }
-
-    private List<TrajectoryNode> getMorningNodes(Map<String, TrajectoryNode> trajectoryNodes) {
-        return trajectoryNodes.values().stream()
-                .filter(node -> node.getTimestamp().getHour() < 8)
-                .toList();
-    }
-
-    private List<TrajectoryNode> getEveningNodes(Map<String, TrajectoryNode> trajectoryNodes) {
-        return trajectoryNodes.values().stream()
-                .filter(node -> node.getTimestamp().getHour() > 20)
-                .toList();
-    }
-
-    private Optional<Building> getBestMatchingBuilding(List<TrajectoryNode> nodes, List<Building> buildings, int threshold) {
-        return nodes.stream()
-                .map(node -> getNearestBuilding(node, buildings, threshold))
-                .flatMap(Optional::stream)
-                .collect(collectingAndThen(groupingBy(
-                                building -> building,
-                                counting()
-                        ),
-                        buildingFrequencies -> buildingFrequencies.entrySet()
-                                .stream()
-                                .max(comparingByValue())
-                                .map(Entry::getKey)));
-    }
-
-    private Optional<Building> getNearestBuilding(TrajectoryNode node, List<Building> buildings, int threshold) {
-        return buildings.stream()
-                .filter(building -> checkDistanceBetween(node, building, threshold))
-                .min(Comparator.comparing(building ->
-                        CalculusUtils.distance(building.lat(), node.getLat(), building.lon(), node.getLon())));
-    }
-
-    private boolean checkDistanceBetween(TrajectoryNode node, Building building, double threshold) {
-        double distance = CalculusUtils.distance(node.getLat(), building.lat(), node.getLon(), building.lon());
-        return distance < threshold;
-    }
-
-    private List<Building> getMeansOfTransportSorted(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
-        List<Building> publicTransportNodes = buildings.stream()
-                .filter(building -> building.type().equals("node"))
-                .filter(building -> building.tags().containsKey("public_transport"))
-                .toList();
-
-        return publicTransportNodes.stream()
-                .filter(publicTransportNode -> checkDistanceFromTrajectory(publicTransportNode, trajectoryGraph.trajectoryNodes(), threshold))
-                .sorted(Comparator.comparingInt(node -> GraphUtils.buildingPositionOnTrajectory(trajectoryGraph.trajectoryNodes(), node)))
-                .toList();
-    }
-
-    public String getArrivalMeanOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
-        return getMeansOfTransportSorted(trajectoryGraph, buildings, threshold)
-                .stream()
-                .findFirst()
-                .filter(building -> {
-                    String nodeId = GraphUtils.buildingCorrespondingTrajectoryNodeIdOnTrajectory(trajectoryGraph.trajectoryNodes(), building);
-                    return trajectoryGraph.nodesPerEachDay()
-                            .values()
-                            .stream()
-                            .findFirst()
-                            .filter(firstDayNodes -> firstDayNodes.containsKey(nodeId))
-                            .isPresent();
-                })
-                .flatMap(this::getBuildingPublicTransportType)
-                .orElse(null);
-    }
-
-    public String getDepartureMeanOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
-        List<Building> publicTransportNodesSorted = getMeansOfTransportSorted(trajectoryGraph, buildings, threshold);
-        return publicTransportNodesSorted
-                .stream()
-                .skip(publicTransportNodesSorted.size() - 1)
-                .findFirst()
-                .filter(building -> {
-                    String nodeId = GraphUtils.buildingCorrespondingTrajectoryNodeIdOnTrajectory(trajectoryGraph.trajectoryNodes(), building);
-                    SortedMap<LocalDate, Map<String, TrajectoryNode>> nodesPerEachDay = trajectoryGraph.nodesPerEachDay();
-                    return nodesPerEachDay
-                            .values()
-                            .stream()
-                            .skip(nodesPerEachDay.size() - 1)
-                            .findFirst()
-                            .filter(lastDayNodes -> lastDayNodes.containsKey(nodeId))
-                            .isPresent();
-                })
-                .flatMap(this::getBuildingPublicTransportType)
-                .orElse(null);
-    }
-
-    public Map<String, Long> getMeansOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
-        List<Building> publicTransportNodesSorted = getMeansOfTransportSorted(trajectoryGraph, buildings, threshold);
-
-        List<List<Building>> subsequences = new LinkedList<>();
-        ListIterator<Building> it = publicTransportNodesSorted.listIterator();
-        boolean firstItem = true;
-        LinkedList<Building> subsequence;
-        while (it.hasNext()) {
-            subsequence = new LinkedList<>();
-            Building currentPublicTransport = it.next();
-            while (it.hasNext()) {
-                Building nextPublicTransport = it.next();
-
-                Building lastPublicTransport;
-                if (subsequence.isEmpty()) {
-                    lastPublicTransport = currentPublicTransport;
-                } else {
-                    lastPublicTransport = subsequence.getLast();
-                }
-                Optional<String> lastPublicTransportType = getBuildingPublicTransportType(lastPublicTransport);
-                Optional<String> nextPublicTransportType = getBuildingPublicTransportType(nextPublicTransport);
-
-                if (lastPublicTransportType.isEmpty()
-                        || nextPublicTransportType.isEmpty()
-                        || ObjectUtils.notEqual(lastPublicTransportType.get(), nextPublicTransportType.get())) {
-                    it.previous();
-                    firstItem = true;
-                    break;
-                }
-                if (firstItem) {
-                    subsequence.add(currentPublicTransport);
-                }
-                subsequence.add(nextPublicTransport);
-                firstItem = false;
-            }
-            if (!subsequence.isEmpty()) {
-                subsequences.add(subsequence);
-            }
-        }
-        return subsequences.stream()
-                .collect(Collectors.groupingBy(
-                        subseq -> subseq.stream().findFirst()
-                                .flatMap(this::getBuildingPublicTransportType)
-                                .orElseThrow(),
-                        Collectors.counting()));
-    }
-
-    private Optional<String> getBuildingPublicTransportType(Building building) {
-        return building.tags()
-                .entrySet().stream()
-                .filter(entry -> StringUtils.equalsAny(entry.getKey(), "bus", "tram", "railway"))
-                .map(Entry::getKey)
-                .findFirst();
+        var surveyResults = new ArrayList<SurveyDTO>();
+        surveyResults.add(new SurveyDTO("When did you come to Lisbon and what day of your stay is it today?", "14.05.2023"));
+        surveyResults.add(new SurveyDTO("Are you staying in Lisbon? ", "Yes"));
+        surveyResults.add(new SurveyDTO("In what type of accommodation in Lisbon do you stay, if any?", "Hotel"));
+        surveyResults.add(new SurveyDTO("What means of transport did you use to get to Lisbon?", "Airplane"));
+        return surveyResults;
     }
 
 }
