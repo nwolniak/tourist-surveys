@@ -11,7 +11,6 @@ import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 import pl.edu.agh.touristsurveys.utils.CalculusUtils;
 import pl.edu.agh.touristsurveys.utils.GraphUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Map.Entry;
@@ -51,6 +50,7 @@ public class SurveyService {
     }
 
     public List<Building> filterSleepingBuildings(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+        List<Building> accommodationBuildings = getAccommodationBuildings(buildings);
         List<Building> sleepingBuildings = new LinkedList<>();
 
         trajectoryGraph.nodesPerEachDay().values()
@@ -58,7 +58,7 @@ public class SurveyService {
                 .findFirst()
                 .ifPresent(firstDayNodes -> {
                     List<TrajectoryNode> morningNodes = getMorningNodes(firstDayNodes);
-                    Optional<Building> morningBuilding = getBestMatchingBuilding(morningNodes, buildings, threshold);
+                    Optional<Building> morningBuilding = getBestMatchingBuilding(morningNodes, accommodationBuildings, threshold);
                     morningBuilding.ifPresent(sleepingBuildings::add);
                 });
 
@@ -66,13 +66,13 @@ public class SurveyService {
                 .stream()
                 .reduce((nodesPerDay1, nodesPerDay2) -> {
                     List<TrajectoryNode> nightNodes = ListUtils.sum(getEveningNodes(nodesPerDay1), getMorningNodes(nodesPerDay2));
-                    Optional<Building> nightBuilding = getBestMatchingBuilding(nightNodes, buildings, threshold);
+                    Optional<Building> nightBuilding = getBestMatchingBuilding(nightNodes, accommodationBuildings, threshold);
                     nightBuilding.ifPresent(sleepingBuildings::add);
                     return nodesPerDay2;
                 })
                 .ifPresent(lastDayNodes -> {
                     List<TrajectoryNode> eveningNodes = getEveningNodes(lastDayNodes);
-                    Optional<Building> eveningBuilding = getBestMatchingBuilding(eveningNodes, buildings, threshold);
+                    Optional<Building> eveningBuilding = getBestMatchingBuilding(eveningNodes, accommodationBuildings, threshold);
                     eveningBuilding.ifPresent(sleepingBuildings::add);
                 });
 
@@ -228,6 +228,17 @@ public class SurveyService {
                 .filter(entry -> StringUtils.equalsAny(entry.getKey(), "bus", "tram", "railway"))
                 .map(Entry::getKey)
                 .findFirst();
+    }
+
+    private List<Building> getAccommodationBuildings(List<Building> buildings) {
+        return buildings.stream()
+                .filter(building -> building.tags()
+                        .entrySet()
+                        .stream()
+                        .filter(entry -> entry.getKey().equals("tourism"))
+                        .anyMatch(entry -> StringUtils.equalsAny(entry.getValue(), "apartment", "chalet",
+                                "guest_house", "hostel", "hotel", "motel")))
+                .toList();
     }
 
 }

@@ -64,19 +64,19 @@ public class TouristSurveysApplication implements ApplicationRunner {
                 .limit(10)
                 .forEach(System.out::println);
 
-        List<Building> nearestBuildings = surveyService.filterNearestBuildings(trajectoryNodes, allBuildings, 100);
+        List<Building> nearestBuildings = surveyService.filterNearestBuildings(trajectoryNodes, allBuildings, 30);
         System.out.println(String.format("============NEAREST_BUILDINGS[%s]=============", nearestBuildings.size()));
         nearestBuildings.stream()
                 .limit(10)
                 .forEach(System.out::println);
 
-        List<Building> visitedBuildings = surveyService.filterVisitedBuildings(trajectoryGraph, nearestBuildings, 50);
+        List<Building> visitedBuildings = surveyService.filterVisitedBuildings(trajectoryGraph, nearestBuildings, 10);
         System.out.println(String.format("============VISITED_BUILDINGS[%s]=============", visitedBuildings.size()));
         visitedBuildings.stream()
                 .limit(10)
                 .forEach(System.out::println);
 
-        List<Building> sleepingBuildings = surveyService.filterSleepingBuildings(trajectoryGraph, nearestBuildings, 50);
+        List<Building> sleepingBuildings = surveyService.filterSleepingBuildings(trajectoryGraph, nearestBuildings, 30);
         System.out.println(String.format("============SLEEPING_BUILDINGS[%s]=============", sleepingBuildings.size()));
         sleepingBuildings.stream()
                 .limit(10)
