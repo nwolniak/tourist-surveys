@@ -68,7 +68,7 @@ public class TrajectoryParser {
                 .build();
     }
   
-    public TrajectoryGraph parseAndMapToInternalModel(byte[] byteArray) {
+    public static TrajectoryGraph parseAndMapToInternalModel(byte[] byteArray) {
           List<TrajectoryNode> nodes = parseTrajectory(byteArray).stream()
                   .map(csvNode -> new TrajectoryNode(csvNode.getTrajectoryId(), csvNode.getLon(), csvNode.getLat(), csvNode.getTimestamp()))
                   .toList();

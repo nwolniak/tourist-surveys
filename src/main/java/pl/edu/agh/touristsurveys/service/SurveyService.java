@@ -12,6 +12,7 @@ import pl.edu.agh.touristsurveys.utils.CalculusUtils;
 import pl.edu.agh.touristsurveys.utils.GraphUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -116,65 +117,73 @@ public class SurveyService {
         return distance < threshold;
     }
 
-    private List<Building> getMeansOfTransportSorted(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
-        List<Building> publicTransportNodes = buildings.stream()
+    private List<Building> getPublicTransportBuildings(List<Building> buildings) {
+        return buildings.stream()
                 .filter(building -> building.type().equals("node"))
                 .filter(building -> building.tags().containsKey("public_transport"))
-                .toList();
-
-        return publicTransportNodes.stream()
-                .filter(publicTransportNode -> checkDistanceFromTrajectory(publicTransportNode, trajectoryGraph.trajectoryNodes(), threshold))
-                .sorted(Comparator.comparingInt(node -> GraphUtils.buildingPositionOnTrajectory(trajectoryGraph.trajectoryNodes(), node)))
                 .toList();
     }
 
     public String getArrivalMeanOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
-        return getMeansOfTransportSorted(trajectoryGraph, buildings, threshold)
+        List<Building> publicTransportBuildings = getPublicTransportBuildings(buildings);
+
+        Map<String, TrajectoryNode> firstDayNodes = trajectoryGraph.nodesPerEachDay()
+                .get(trajectoryGraph.nodesPerEachDay().firstKey());
+
+        LocalDateTime startDate = firstDayNodes.values()
                 .stream()
                 .findFirst()
-                .filter(building -> {
-                    String nodeId = GraphUtils.buildingCorrespondingTrajectoryNodeIdOnTrajectory(trajectoryGraph.trajectoryNodes(), building);
-                    return trajectoryGraph.nodesPerEachDay()
-                            .values()
-                            .stream()
-                            .findFirst()
-                            .filter(firstDayNodes -> firstDayNodes.containsKey(nodeId))
-                            .isPresent();
-                })
+                .map(TrajectoryNode::getTimestamp)
+                .orElseThrow();
+
+        List<TrajectoryNode> arrivalNodes = firstDayNodes.values()
+                .stream()
+                .filter(node -> node.getTimestamp().isBefore(startDate.plusMinutes(15)))
+                .toList();
+
+        return getBestMatchingBuilding(arrivalNodes, publicTransportBuildings, threshold)
                 .flatMap(this::getBuildingPublicTransportType)
                 .orElse(null);
     }
 
     public String getDepartureMeanOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
-        List<Building> publicTransportNodesSorted = getMeansOfTransportSorted(trajectoryGraph, buildings, threshold);
-        return publicTransportNodesSorted
+        List<Building> publicTransportBuildings = getPublicTransportBuildings(buildings);
+
+        Map<String, TrajectoryNode> lastDayNodes = trajectoryGraph.nodesPerEachDay()
+                .get(trajectoryGraph.nodesPerEachDay().lastKey());
+
+        LocalDateTime endDate = lastDayNodes.values()
                 .stream()
-                .skip(publicTransportNodesSorted.size() - 1)
+                .skip(lastDayNodes.size() - 1)
                 .findFirst()
-                .filter(building -> {
-                    String nodeId = GraphUtils.buildingCorrespondingTrajectoryNodeIdOnTrajectory(trajectoryGraph.trajectoryNodes(), building);
-                    SortedMap<LocalDate, Map<String, TrajectoryNode>> nodesPerEachDay = trajectoryGraph.nodesPerEachDay();
-                    return nodesPerEachDay
-                            .values()
-                            .stream()
-                            .skip(nodesPerEachDay.size() - 1)
-                            .findFirst()
-                            .filter(lastDayNodes -> lastDayNodes.containsKey(nodeId))
-                            .isPresent();
-                })
+                .map(TrajectoryNode::getTimestamp)
+                .orElseThrow();
+
+        List<TrajectoryNode> departureNodes = lastDayNodes.values()
+                .stream()
+                .filter(node -> node.getTimestamp().isAfter(endDate.minusMinutes(15)))
+                .toList();
+
+        return getBestMatchingBuilding(departureNodes, publicTransportBuildings, threshold)
                 .flatMap(this::getBuildingPublicTransportType)
                 .orElse(null);
     }
 
     public Map<String, Long> getMeansOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
-        List<Building> publicTransportNodesSorted = getMeansOfTransportSorted(trajectoryGraph, buildings, threshold);
+        List<Building> publicTransportBuildings = getPublicTransportBuildings(buildings);
 
+        List<Building> publicTransportBuildingsInOrder = trajectoryGraph.trajectoryNodes()
+                .values()
+                .stream()
+                .map(node -> getNearestBuilding(node, publicTransportBuildings, threshold))
+                .flatMap(Optional::stream)
+                .toList();
+
+        ListIterator<Building> it = publicTransportBuildingsInOrder.listIterator();
         List<List<Building>> subsequences = new LinkedList<>();
-        ListIterator<Building> it = publicTransportNodesSorted.listIterator();
         boolean firstItem = true;
-        LinkedList<Building> subsequence;
         while (it.hasNext()) {
-            subsequence = new LinkedList<>();
+            LinkedList<Building> subsequence = new LinkedList<>();
             Building currentPublicTransport = it.next();
             while (it.hasNext()) {
                 Building nextPublicTransport = it.next();
