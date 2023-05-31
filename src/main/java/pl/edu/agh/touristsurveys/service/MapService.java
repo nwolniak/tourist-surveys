@@ -30,28 +30,28 @@ public class MapService {
         return overpassService.getBuildings(query);
     }
 
-    public double getTopBound(Map<String, TrajectoryNode> nodes) {
+    private static double getTopBound(Map<String, TrajectoryNode> nodes) {
         return nodes.values().stream()
                 .map(TrajectoryNode::getLat)
                 .max(comparingDouble(value -> value))
                 .orElseThrow();
     }
 
-    public double getLeftBound(Map<String, TrajectoryNode> nodes) {
+    private static double getLeftBound(Map<String, TrajectoryNode> nodes) {
         return nodes.values().stream()
                 .map(TrajectoryNode::getLon)
                 .min(comparingDouble(value -> value))
                 .orElseThrow();
     }
 
-    public double getBottomBound(Map<String, TrajectoryNode> nodes) {
+    private static double getBottomBound(Map<String, TrajectoryNode> nodes) {
         return nodes.values().stream()
                 .map(TrajectoryNode::getLat)
                 .min(comparingDouble(value -> value))
                 .orElseThrow();
     }
 
-    public double getRightBound(Map<String, TrajectoryNode> nodes) {
+    private static double getRightBound(Map<String, TrajectoryNode> nodes) {
         return nodes.values().stream()
                 .map(TrajectoryNode::getLon)
                 .max(comparingDouble(value -> value))

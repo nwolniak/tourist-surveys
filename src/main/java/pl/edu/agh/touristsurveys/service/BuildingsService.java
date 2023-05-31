@@ -1,6 +1,7 @@
 package pl.edu.agh.touristsurveys.service;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 import pl.edu.agh.touristsurveys.utils.CalculusUtils;
 import pl.edu.agh.touristsurveys.utils.GraphUtils;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Map.Entry;
@@ -239,6 +241,62 @@ public class BuildingsService {
                         .anyMatch(entry -> StringUtils.equalsAny(entry.getValue(), "apartment", "chalet",
                                 "guest_house", "hostel", "hotel", "motel")))
                 .toList();
+    }
+
+    private List<Building> getBuildingsWithCityInformation(List<Building> buildings) {
+        return buildings.stream()
+                .filter(building -> building.type().equals("node"))
+                .filter(building -> building.tags().containsKey("addr:city"))
+                .toList();
+    }
+
+    private String getCityName(Building building) {
+        return building.tags().get("addr:city");
+    }
+
+    public Map<String, LocalDateTime> getCitiesFirstVisitInOrder(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+        List<Building> buildingsWithCityInformation = getBuildingsWithCityInformation(buildings);
+
+        return trajectoryGraph.trajectoryNodes()
+                .values()
+                .stream()
+                .map(node -> getNearestBuilding(node, buildingsWithCityInformation, threshold)
+                        .map(this::getCityName)
+                        .map(cityName -> Map.entry(cityName, node.getTimestamp())))
+                .flatMap(Optional::stream)
+                .sorted(comparingByValue())
+                .collect(toMap(Entry::getKey, Entry::getValue, (earlier, later) -> earlier));
+    }
+
+    public Map<String, LocalDateTime> getCitiesLastVisitInOrder(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+        List<Building> buildingsWithCityInformation = getBuildingsWithCityInformation(buildings);
+
+        return trajectoryGraph.trajectoryNodes()
+                .values()
+                .stream()
+                .map(node -> getNearestBuilding(node, buildingsWithCityInformation, threshold)
+                        .map(this::getCityName)
+                        .map(cityName -> Map.entry(cityName, node.getTimestamp())))
+                .flatMap(Optional::stream)
+                .sorted(comparingByValue())
+                .collect(toMap(Entry::getKey, Entry::getValue, (earlier, later) -> later));
+    }
+
+    public Map<String, String> getCitiesTimeSpentIn(Map<String, LocalDateTime> citiesFirstVisitInOrder, Map<String, LocalDateTime> citiesLastVisitInOrder) {
+        var commonCities = SetUtils.intersection(citiesFirstVisitInOrder.keySet(), citiesLastVisitInOrder.keySet());
+        return commonCities.stream()
+                .map(commonCity -> {
+                    var from = citiesFirstVisitInOrder.get(commonCity);
+                    var to = citiesLastVisitInOrder.get(commonCity);
+                    Duration duration = Duration.between(from, to);
+                    long days = duration.toDays();
+                    long hours = duration.toHours() % 24;
+                    long minutes = duration.toMinutes() % 60;
+                    String durationFormatted = String.format("%d days, %d hours, %d minutes", days, hours, minutes);
+                    return Map.entry(commonCity, durationFormatted);
+                })
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
     }
 
 }
