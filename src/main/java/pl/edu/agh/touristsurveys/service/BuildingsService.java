@@ -126,12 +126,20 @@ public class BuildingsService {
                 .toList();
     }
 
-    private List<Building> getAttractions(List<Building> buildings)
-    {
+    private List<Building> getAttractions(List<Building> buildings) {
         return buildings.stream()
                 .filter(building -> building.type().equals("node"))
                 .filter(building -> building.tags().containsKey("tourism"))
-                .filter(building -> !List.of("hotel", "motel", "hostel", "guest_house").contains(building.tags().get("tourism")))
+                .filter(building -> !List.of("apartment", "chalet",
+                        "guest_house", "hostel", "hotel", "motel").contains(building.tags().get("tourism")))
+                .toList();
+    }
+
+    private List<Building> getRestaurants(List<Building> buildings) {
+        return buildings.stream()
+                .filter(building -> building.type().equals("node"))
+                .filter(building -> building.tags().containsKey("amenity"))
+                .filter(building -> List.of("restaurant", "pub", "cafe", "bar", "fast_food", "food_court").contains(building.tags().get("amenity")))
                 .toList();
     }
 
@@ -298,6 +306,16 @@ public class BuildingsService {
                 .values()
                 .stream()
                 .map(node -> getNearestBuilding(node, attractions, threshold))
+                .flatMap(Optional::stream)
+                .toList();
+    }
+
+    public List<Building> getFavouriteRestaurants(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+        var restaurants = getRestaurants(buildings);
+        return trajectoryGraph.trajectoryNodes()
+                .values()
+                .stream()
+                .map(node -> getNearestBuilding(node, restaurants, threshold))
                 .flatMap(Optional::stream)
                 .toList();
     }

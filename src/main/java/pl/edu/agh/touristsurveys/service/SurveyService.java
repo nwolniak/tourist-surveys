@@ -21,10 +21,11 @@ public class SurveyService {
 
     private static final List<String> searchTags = List.of(
             "museum",
-            "tourism=hotel",
+            "tourism",
+/*            "tourism=hotel",
             "tourism=hostel",
             "tourism=motel",
-            "tourism=guest_house",
+            "tourism=guest_house",*/
             "public_transport=station",
             "amenity=bar",
             "amenity=biergarten",
@@ -50,6 +51,7 @@ public class SurveyService {
         List<Building> visitedBuildings = buildingsService.filterVisitedBuildings(trajectoryGraph, nearestBuildings, 50);
         List<Building> sleepingBuildings = buildingsService.filterSleepingBuildings(trajectoryGraph, nearestBuildings, 50);
         List<Building> attractionBuildings = buildingsService.getMostCommonAttractions(trajectoryGraph, allBuildings, 150);
+        List<Building> restaurantBuildings = buildingsService.getFavouriteRestaurants(trajectoryGraph, nearestBuildings, 50);
         Map<String, Long> meansOfTransport = buildingsService.getMeansOfTransport(trajectoryGraph, nearestBuildings, 10);
         String arrivalMeanOfTransport = buildingsService.getArrivalMeanOfTransport(trajectoryGraph, nearestBuildings, 10);
         String departureMeanOfTransport = buildingsService.getDepartureMeanOfTransport(trajectoryGraph, nearestBuildings, 10);
@@ -98,6 +100,15 @@ public class SurveyService {
                         .findFirst()
                         .map(firstAttractionBuilding -> firstAttractionBuilding.tags().getOrDefault("name", "N/A"))
                         .orElse("N/A")));
+        surveyResults.add(new SurveyDTO(
+                String.format("What is the name of the restaurant in %s where you spent the most time?", mainCity.getKey()),
+                restaurantBuildings.get(0).tags().getOrDefault("name", "N/A")));
+        surveyResults.add(new SurveyDTO(
+                String.format("What is the type of restaurant in %s where you have spent the most time?", mainCity.getKey()),
+                restaurantBuildings.get(0).tags().getOrDefault("amenity", "N/A")));
+        surveyResults.add(new SurveyDTO(
+                String.format("What cuisine is served in the restaurant in %s where you spent the most time?", mainCity.getKey()),
+                restaurantBuildings.get(0).tags().getOrDefault("cuisine", "N/A")));
 
         return surveyResults;
     }
