@@ -49,6 +49,7 @@ public class SurveyService {
         List<Building> nearestBuildings = buildingsService.filterNearestBuildings(nodes, allBuildings, 100);
         List<Building> visitedBuildings = buildingsService.filterVisitedBuildings(trajectoryGraph, nearestBuildings, 50);
         List<Building> sleepingBuildings = buildingsService.filterSleepingBuildings(trajectoryGraph, nearestBuildings, 50);
+        List<Building> attractionBuildings = buildingsService.getMostCommonAttractions(trajectoryGraph, allBuildings, 150);
         Map<String, Long> meansOfTransport = buildingsService.getMeansOfTransport(trajectoryGraph, nearestBuildings, 10);
         String arrivalMeanOfTransport = buildingsService.getArrivalMeanOfTransport(trajectoryGraph, nearestBuildings, 10);
         String departureMeanOfTransport = buildingsService.getDepartureMeanOfTransport(trajectoryGraph, nearestBuildings, 10);
@@ -85,6 +86,18 @@ public class SurveyService {
         surveyResults.add(new SurveyDTO(
                 String.format("What means of transport did you use to get to %s?", mainCity.getKey()),
                 arrivalMeanOfTransport != null ? arrivalMeanOfTransport : "car"));
+        surveyResults.add(new SurveyDTO(
+                "What kind of attractions have you spent the most time on?",
+                attractionBuildings.stream()
+                        .findFirst()
+                        .map(firstAttractionBuilding -> firstAttractionBuilding.tags().getOrDefault("tourism", "N/A"))
+                        .orElse("N/A")));
+        surveyResults.add(new SurveyDTO(
+                "What is a name of attractions have you spent the most time on?",
+                attractionBuildings.stream()
+                        .findFirst()
+                        .map(firstAttractionBuilding -> firstAttractionBuilding.tags().getOrDefault("name", "N/A"))
+                        .orElse("N/A")));
 
         return surveyResults;
     }
