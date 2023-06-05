@@ -10,6 +10,7 @@ import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,8 @@ public class SurveyService {
     private final MapService mapService;
 
     public List<SurveyDTO> createTouristSurvey(TrajectoryGraph trajectoryGraph) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
         Map<String, TrajectoryNode> nodes = trajectoryGraph.trajectoryNodes();
         List<Building> allBuildings = mapService.getAllBuildings(nodes, searchTags);
 
@@ -59,10 +62,10 @@ public class SurveyService {
         citiesTimeSpent.forEach((key, value) -> {
             surveyResults.add(new SurveyDTO(
                     String.format("When did you come to %s?", key),
-                    citiesFirstVisitInOrder.get(key).toString()));
+                    citiesFirstVisitInOrder.get(key).format(formatter)));
             surveyResults.add(new SurveyDTO(
                     String.format("When did you leave the city of %s?", key),
-                    citiesLastVisitInOrder.get(key).toString()));
+                    citiesLastVisitInOrder.get(key).format(formatter)));
             surveyResults.add(new SurveyDTO(
                     String.format("How long have you been in %s?", key),
                     value));
@@ -83,8 +86,6 @@ public class SurveyService {
                 String.format("What means of transport did you use to get to %s?", mainCity.getKey()),
                 arrivalMeanOfTransport != null ? arrivalMeanOfTransport : "car"));
 
-        surveyResults.add(new
-                SurveyDTO("What means of transport did you use to get to Lisbon?", "Airplane"));
         return surveyResults;
     }
 
