@@ -7,6 +7,8 @@ import pl.edu.agh.touristsurveys.model.SurveyDTO;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryGraph;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,9 +68,23 @@ public class SurveyService {
                     value));
         });
 
-        surveyResults.add(new SurveyDTO("Are you staying in Lisbon? ", "Yes"));
-        surveyResults.add(new SurveyDTO("In what type of accommodation in Lisbon do you stay, if any?", "Hotel"));
-        surveyResults.add(new SurveyDTO("What means of transport did you use to get to Lisbon?", "Airplane"));
+        Map.Entry<String, String> mainCity = citiesTimeSpent.entrySet().iterator().next();
+
+        surveyResults.add(new SurveyDTO(
+                String.format("Are you staying in %s? ", mainCity.getKey()),
+                mainCity.getValue().contains("0 days") ? "No" : "Yes"));
+        surveyResults.add(new SurveyDTO(
+                String.format("In what type of accommodation in %s do you stay, if any?", mainCity.getKey()),
+                mainCity.getValue().contains("0 days") ? "N/A" : sleepingBuildings.get(0).tags().get("tourism")));
+        surveyResults.add(new SurveyDTO(
+                String.format("What is the name of the accommodation in %s where you stayed, if any?", mainCity.getKey()),
+                mainCity.getValue().contains("0 days") ? "N/A" : sleepingBuildings.get(0).tags().get("name")));
+        surveyResults.add(new SurveyDTO(
+                String.format("What means of transport did you use to get to %s?", mainCity.getKey()),
+                arrivalMeanOfTransport != null ? arrivalMeanOfTransport : "car"));
+
+        surveyResults.add(new
+                SurveyDTO("What means of transport did you use to get to Lisbon?", "Airplane"));
         return surveyResults;
     }
 
