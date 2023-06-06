@@ -122,7 +122,24 @@ public class BuildingsService {
     private List<Building> getPublicTransportBuildings(List<Building> buildings) {
         return buildings.stream()
                 .filter(building -> building.type().equals("node"))
-                .filter(building -> building.tags().containsKey("public_transport"))
+                .filter(building -> building.tags().containsKey("tourism"))
+                .toList();
+    }
+
+    private List<Building> getAttractions(List<Building> buildings) {
+        return buildings.stream()
+                .filter(building -> building.type().equals("node"))
+                .filter(building -> building.tags().containsKey("tourism"))
+                .filter(building -> !List.of("apartment", "chalet",
+                        "guest_house", "hostel", "hotel", "motel").contains(building.tags().get("tourism")))
+                .toList();
+    }
+
+    private List<Building> getRestaurants(List<Building> buildings) {
+        return buildings.stream()
+                .filter(building -> building.type().equals("node"))
+                .filter(building -> building.tags().containsKey("amenity"))
+                .filter(building -> List.of("restaurant", "pub", "cafe", "bar", "fast_food", "food_court").contains(building.tags().get("amenity")))
                 .toList();
     }
 
@@ -280,6 +297,27 @@ public class BuildingsService {
                 .flatMap(Optional::stream)
                 .sorted(comparingByValue())
                 .collect(toMap(Entry::getKey, Entry::getValue, (earlier, later) -> later));
+    }
+
+    public List<Building> getMostCommonAttractions(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+
+        var attractions = getAttractions(buildings);
+        return trajectoryGraph.trajectoryNodes()
+                .values()
+                .stream()
+                .map(node -> getNearestBuilding(node, attractions, threshold))
+                .flatMap(Optional::stream)
+                .toList();
+    }
+
+    public List<Building> getFavouriteRestaurants(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+        var restaurants = getRestaurants(buildings);
+        return trajectoryGraph.trajectoryNodes()
+                .values()
+                .stream()
+                .map(node -> getNearestBuilding(node, restaurants, threshold))
+                .flatMap(Optional::stream)
+                .toList();
     }
 
     public Map<String, String> getCitiesTimeSpentIn(Map<String, LocalDateTime> citiesFirstVisitInOrder, Map<String, LocalDateTime> citiesLastVisitInOrder) {
