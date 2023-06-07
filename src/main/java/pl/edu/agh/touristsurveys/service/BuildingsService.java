@@ -122,7 +122,7 @@ public class BuildingsService {
     private List<Building> getPublicTransportBuildings(List<Building> buildings) {
         return buildings.stream()
                 .filter(building -> building.type().equals("node"))
-                .filter(building -> building.tags().containsKey("tourism"))
+                .filter(building -> building.tags().containsKey("public_transport"))
                 .toList();
     }
 
@@ -299,25 +299,22 @@ public class BuildingsService {
                 .collect(toMap(Entry::getKey, Entry::getValue, (earlier, later) -> later));
     }
 
-    public List<Building> getMostCommonAttractions(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
-
+    public Building getMostCommonAttraction(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
         var attractions = getAttractions(buildings);
-        return trajectoryGraph.trajectoryNodes()
-                .values()
-                .stream()
-                .map(node -> getNearestBuilding(node, attractions, threshold))
-                .flatMap(Optional::stream)
-                .toList();
+
+        List<TrajectoryNode> trajectoryNodes = trajectoryGraph.trajectoryNodes().values().stream().toList();
+        Optional<Building> bestMatchingAttraction = getBestMatchingBuilding(trajectoryNodes, attractions, threshold);
+
+        return bestMatchingAttraction.orElse(null);
     }
 
-    public List<Building> getFavouriteRestaurants(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+    public Building getFavouriteRestaurant(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
         var restaurants = getRestaurants(buildings);
-        return trajectoryGraph.trajectoryNodes()
-                .values()
-                .stream()
-                .map(node -> getNearestBuilding(node, restaurants, threshold))
-                .flatMap(Optional::stream)
-                .toList();
+
+        List<TrajectoryNode> trajectoryNodes = trajectoryGraph.trajectoryNodes().values().stream().toList();
+        Optional<Building> bestMatchingRestaurant = getBestMatchingBuilding(trajectoryNodes, restaurants, threshold);
+
+        return bestMatchingRestaurant.orElse(null);
     }
 
     public Map<String, String> getCitiesTimeSpentIn(Map<String, LocalDateTime> citiesFirstVisitInOrder, Map<String, LocalDateTime> citiesLastVisitInOrder) {
