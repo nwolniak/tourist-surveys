@@ -28,11 +28,7 @@ public class CalculusUtils {
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distance = R * c * 1000;
-
-        distance = Math.pow(distance, 2);
-
-        return Math.sqrt(distance);
+        return R * c * 1000;
     }
 
     public static double distance(TrajectoryNode node, Building building) {
