@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import pl.edu.agh.touristsurveys.model.SurveyDTO;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryGraph;
-import pl.edu.agh.touristsurveys.parser.TrajectoryParser;
+import pl.edu.agh.touristsurveys.parser.TrajectoryMapper;
 import pl.edu.agh.touristsurveys.service.SurveyService;
 
 import java.util.List;
@@ -18,12 +18,14 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000")
 public class SurveyController {
 
+    private final TrajectoryMapper trajectoryMapper;
     private final SurveyService surveyService;
 
     @PostMapping("/surveyResults")
     public List<SurveyDTO> surveyResults(@RequestBody Map<String, String> requestBody) {
-        var csv = requestBody.get("file");
-        TrajectoryGraph trajectoryGraph = TrajectoryParser.parseAndMapToInternalModel(csv.getBytes());
+        String csv = requestBody.get("file");
+        String type = requestBody.get("type");
+        TrajectoryGraph trajectoryGraph = trajectoryMapper.parseAndMapToInternalModel(csv.getBytes(), type);
         return surveyService.createTouristSurvey(trajectoryGraph);
     }
 

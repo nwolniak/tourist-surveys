@@ -1,18 +1,12 @@
 package pl.edu.agh.touristsurveys.service;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.stereotype.Service;
-import pl.edu.agh.touristsurveys.TouristSurveysApplication;
 import pl.edu.agh.touristsurveys.model.Building;
 import pl.edu.agh.touristsurveys.model.SurveyDTO;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryGraph;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 
-import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -112,7 +106,7 @@ public class SurveyService {
             surveyResults.add(new SurveyDTO(
                     String.format("What cuisine is served in the restaurant in %s where you spent the most time?", mainCity.getKey()),
                     favouriteRestaurant.tags().getOrDefault("cuisine", "N/A")));
-        }else{
+        } else {
             System.out.println("City not found");
         }
 

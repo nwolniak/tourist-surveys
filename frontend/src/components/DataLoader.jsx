@@ -15,18 +15,26 @@ function DataLoader(props) {
       const fileReader = new FileReader();
       fileReader.onload = function (event) {
         const text = event.target.result;
-        csvFileToArray(text);
-        sendCSVtoServer(text)
+        var fileName = e.target.files[0].name;
+        if (fileName.endsWith(".csv")) {
+          console.log("csv send")
+          csvFileToArray(text);
+          sendFileToServer(text, "csv")
+        } else if (fileName.endsWith(".json")){
+          console.log("json send")
+          sendFileToServer(text, "json")
+        }
       };
       
       fileReader.readAsText(e.target.files[0]);
     }
   };
 
-  const sendCSVtoServer = async (csv) => {
+  const sendFileToServer = async (file, type) => {
 
     const requestData = {
-      file: csv,
+      file: file,
+      type: type
     };
     
 
