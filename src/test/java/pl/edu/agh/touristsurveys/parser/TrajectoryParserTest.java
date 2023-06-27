@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TrajectoryParserTest {
 
-//    private final TrajectoryParser trajectoryParser = new TrajectoryParser(Constants.TRAJECTORY_CSV_PATH);
+//    private final TrajectoryMapper trajectoryParser = new TrajectoryMapper(Constants.TRAJECTORY_CSV_PATH);
 //
 //    @Test
 //    public void parseTrajectoryTest() {
