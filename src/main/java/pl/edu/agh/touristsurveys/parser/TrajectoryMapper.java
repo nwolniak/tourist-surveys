@@ -7,9 +7,7 @@ import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryGraph;
 import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 import pl.edu.agh.touristsurveys.utils.GraphUtils;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,7 +32,7 @@ public class TrajectoryMapper {
                         .collect(groupingBy(
                                 node -> node.getTimestamp().toLocalDate(),
                                 TreeMap::new,
-                                Collectors.toMap(TrajectoryNode::getNodeId, Function.identity()))))
+                                Collectors.toMap(TrajectoryNode::getNodeId, Function.identity(), (o1, o2) -> o1, TreeMap::new))))
                 .build();
     }
 

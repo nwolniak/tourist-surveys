@@ -9,10 +9,7 @@ import pl.edu.agh.touristsurveys.model.trajectory.TrajectoryNode;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,10 +48,10 @@ public class SurveyService {
         List<Building> sleepingBuildings = buildingsService.filterSleepingBuildings(trajectoryGraph, nearestBuildings, 50);
         Map<String, Long> meansOfTransport = buildingsService.getMeansOfTransport(trajectoryGraph, nearestBuildings, 10);
 
-        Building favouriteRestaurant = buildingsService.getFavouriteRestaurant(trajectoryGraph, nearestBuildings, 50);
-        Building mostCommonAttraction = buildingsService.getMostCommonAttraction(trajectoryGraph, allBuildings, 150);
-        String arrivalMeanOfTransport = buildingsService.getArrivalMeanOfTransport(trajectoryGraph, nearestBuildings, 20);
-        String departureMeanOfTransport = buildingsService.getDepartureMeanOfTransport(trajectoryGraph, nearestBuildings, 20);
+        Optional<Building> favouriteRestaurant = buildingsService.getFavouriteRestaurant(trajectoryGraph, nearestBuildings, 50);
+        Optional<Building> mostCommonAttraction = buildingsService.getMostCommonAttraction(trajectoryGraph, allBuildings, 150);
+        Optional<String> arrivalMeanOfTransport = buildingsService.getArrivalMeanOfTransport(trajectoryGraph, nearestBuildings, 20);
+        Optional<String> departureMeanOfTransport = buildingsService.getDepartureMeanOfTransport(trajectoryGraph, nearestBuildings, 20);
 
         Map<String, LocalDateTime> citiesFirstVisitInOrder = buildingsService.getCitiesFirstVisitInOrder(trajectoryGraph, nearestBuildings, 100);
         Map<String, LocalDateTime> citiesLastVisitInOrder = buildingsService.getCitiesLastVisitInOrder(trajectoryGraph, nearestBuildings, 100);
@@ -90,22 +87,32 @@ public class SurveyService {
                     mainCity.getValue().contains("0 days") ? "N/A" : sleepingBuildings.get(0).tags().get("name")));
             surveyResults.add(new SurveyDTO(
                     String.format("What means of transport did you use to get to %s?", mainCity.getKey()),
-                    arrivalMeanOfTransport != null ? arrivalMeanOfTransport : "car"));
+                    arrivalMeanOfTransport.orElse("car")));
             surveyResults.add(new SurveyDTO(
                     String.format("What kind of attraction in %s have you spent the most time on?", mainCity.getKey()),
-                    mostCommonAttraction.tags().getOrDefault("tourism", "N/A")));
+                    mostCommonAttraction
+                            .map(attraction -> attraction.tags().get("tourism"))
+                            .orElse("N/A")));
             surveyResults.add(new SurveyDTO(
                     String.format("What is the name of the attraction in %s you spent the most time on?", mainCity.getKey()),
-                    mostCommonAttraction.tags().getOrDefault("name", "N/A")));
+                    mostCommonAttraction
+                            .map(attraction -> attraction.tags().get("name"))
+                            .orElse("N/A")));
             surveyResults.add(new SurveyDTO(
                     String.format("What is the name of the restaurant in %s where you spent the most time?", mainCity.getKey()),
-                    favouriteRestaurant.tags().getOrDefault("name", "N/A")));
+                    favouriteRestaurant
+                            .map(restaurant -> restaurant.tags().get("name"))
+                            .orElse("N/A")));
             surveyResults.add(new SurveyDTO(
                     String.format("What is the type of the restaurant in %s where you have spent the most time?", mainCity.getKey()),
-                    favouriteRestaurant.tags().getOrDefault("amenity", "N/A")));
+                    favouriteRestaurant
+                            .map(restaurant -> restaurant.tags().get("amenity"))
+                            .orElse("N/A")));
             surveyResults.add(new SurveyDTO(
                     String.format("What cuisine is served in the restaurant in %s where you spent the most time?", mainCity.getKey()),
-                    favouriteRestaurant.tags().getOrDefault("cuisine", "N/A")));
+                    favouriteRestaurant
+                            .map(restaurant -> restaurant.tags().get("cuisine"))
+                            .orElse("N/A")));
         } else {
             System.out.println("City not found");
         }
