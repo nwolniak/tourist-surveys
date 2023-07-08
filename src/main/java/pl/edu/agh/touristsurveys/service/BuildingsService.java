@@ -143,7 +143,7 @@ public class BuildingsService {
                 .toList();
     }
 
-    public String getArrivalMeanOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+    public Optional<String> getArrivalMeanOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
         List<Building> publicTransportBuildings = getPublicTransportBuildings(buildings);
 
         Map<String, TrajectoryNode> firstDayNodes = trajectoryGraph.nodesPerEachDay()
@@ -161,11 +161,10 @@ public class BuildingsService {
                 .toList();
 
         return getBestMatchingBuilding(arrivalNodes, publicTransportBuildings, threshold)
-                .flatMap(this::getBuildingPublicTransportType)
-                .orElse(null);
+                .flatMap(this::getBuildingPublicTransportType);
     }
 
-    public String getDepartureMeanOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+    public Optional<String> getDepartureMeanOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
         List<Building> publicTransportBuildings = getPublicTransportBuildings(buildings);
 
         Map<String, TrajectoryNode> lastDayNodes = trajectoryGraph.nodesPerEachDay()
@@ -184,8 +183,7 @@ public class BuildingsService {
                 .toList();
 
         return getBestMatchingBuilding(departureNodes, publicTransportBuildings, threshold)
-                .flatMap(this::getBuildingPublicTransportType)
-                .orElse(null);
+                .flatMap(this::getBuildingPublicTransportType);
     }
 
     public Map<String, Long> getMeansOfTransport(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
@@ -299,22 +297,16 @@ public class BuildingsService {
                 .collect(toMap(Entry::getKey, Entry::getValue, (earlier, later) -> later));
     }
 
-    public Building getMostCommonAttraction(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+    public Optional<Building> getMostCommonAttraction(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
         var attractions = getAttractions(buildings);
-
         List<TrajectoryNode> trajectoryNodes = trajectoryGraph.trajectoryNodes().values().stream().toList();
-        Optional<Building> bestMatchingAttraction = getBestMatchingBuilding(trajectoryNodes, attractions, threshold);
-
-        return bestMatchingAttraction.orElse(null);
+        return getBestMatchingBuilding(trajectoryNodes, attractions, threshold);
     }
 
-    public Building getFavouriteRestaurant(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
+    public Optional<Building> getFavouriteRestaurant(TrajectoryGraph trajectoryGraph, List<Building> buildings, int threshold) {
         var restaurants = getRestaurants(buildings);
-
         List<TrajectoryNode> trajectoryNodes = trajectoryGraph.trajectoryNodes().values().stream().toList();
-        Optional<Building> bestMatchingRestaurant = getBestMatchingBuilding(trajectoryNodes, restaurants, threshold);
-
-        return bestMatchingRestaurant.orElse(null);
+        return getBestMatchingBuilding(trajectoryNodes, restaurants, threshold);
     }
 
     public Map<String, String> getCitiesTimeSpentIn(Map<String, LocalDateTime> citiesFirstVisitInOrder, Map<String, LocalDateTime> citiesLastVisitInOrder) {
